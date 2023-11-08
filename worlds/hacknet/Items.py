@@ -81,8 +81,8 @@ item_table = {
 
     "SecurityTracer" : ("junk", 118, False),
     "HacknetEXE" : ("junk", 127, False),
-
-    "ETASTrap" : ("trap", 119, False), # Forces the player into the Emergency Trace Aversion System (CSEC_Member flag is applied on game load w/ mod)
+    # Forces the player into the Emergency Trace Aversion System (CSEC_Member flag is applied on game load w/ mod)
+    "ETASTrap" : ("trap", 119, False),
 
     # Labyrinths Programs
     "TorrentStreamInjector" : ("progression", 6881, True),

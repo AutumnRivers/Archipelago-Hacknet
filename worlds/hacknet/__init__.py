@@ -68,23 +68,39 @@ class HacknetWorld(World):
         shuffle_achievements = get_option_value(self.multiworld, self.player, "shuffle_achievements")
         include_labs = get_option_value(self.multiworld, self.player, "include_labyrinths")
         shuffle_postgame = get_option_value(self.multiworld, self.player, "shuffle_postgame")
+        exclude_locations = ["VBIT Finish Sequencer"]
 
+        if shuffle_postgame is False:
+            exclude_locations.append("LABS Break Into Gibson")
+            exclude_locations.append("CSEC Subvert Psylance Investigation")
+            exclude_locations.append("VBIT Reunion")
+
+        def assign_regions(category, target_region):
+            region_locs = {k:v for (k,v) in location_table.items() if v[0] == (category)}
+
+            print(f"Assigning locations for {category} Region")
+
+            for loc in region_locs:
+                if loc in exclude_locations:
+                    continue
+
+                loc_name = loc
+                loc_data = region_locs[loc]
+
+                target_region.locations.append(
+                    HacknetLocation(self.player, loc_name, loc_data, target_region)
+                )
+
+        # Menu / Achievements
         menu_region = Region("Menu", self.player, self.multiworld)
         self.multiworld.regions.append(menu_region)
 
-        for loc in range(6):
-            if shuffle_achievements is False:
-                continue
+        if shuffle_achievements is not False:
+            assign_regions("Achievements", menu_region)
 
-            offset = 46
-
-            real_location = {k:v for (k,v) in location_table.items() if v[1] == (loc + offset)}
-            loc_name = list(real_location.keys())[0]
-            loc_data = next(iter(real_location.values()))
-
-            menu_region.locations.append(HacknetLocation(self.player, loc_name, loc_data, menu_region)) # Achievements
-
-        menu_region.locations.append(HacknetLocation(self.player, "INTRO Complete Introduction", ("Intro", 56, False, False, True), menu_region))
+        # Add Intro Completion
+        menu_region.locations.append(HacknetLocation(
+            self.player, "INTRO Complete Introduction", ("Intro", 56, False, False, True), menu_region))
 
         # Entropy
         entropy_region = Region("Entropy", self.player, self.multiworld)
@@ -93,29 +109,28 @@ class HacknetWorld(World):
         menu_region.add_exits({"Entropy": "ENT Intro / Confirmation"},
         {"Entropy": lambda state: state.has("SSHCrack", self.player)})
 
+        # Require SSHCrack for Entropy's entrance
         menu_region.connect(entropy_region, rule=lambda state: state.has("SSHCrack", self.player))
 
-        for loc in range(9):
-            real_location = {k:v for (k,v) in location_table.items() if v[1] == (loc + 1)}
-            loc_name = list(real_location.keys())[0]
-            loc_data = next(iter(real_location.values()))
-
-            hn_location = HacknetLocation(self.player, loc_name, loc_data, entropy_region)
-
-            print(f"Entropy: Registering ({loc_name}) (A:{hn_location.address})")
-
-            entropy_region.locations.append(hn_location)
+        assign_regions("Entropy", entropy_region)
 
         # Naix Recovery Event
         naix_recover_location = {k:v for (k,v) in location_table.items() if v[1] == 48}
         naix_loc_name = "NAIX Recover"
         naix_loc_data = next(iter(naix_recover_location.values()))
 
+        # Add Naix to Entropy
         entropy_region.locations.append(HacknetLocation(self.player, naix_loc_name, naix_loc_data, entropy_region))
 
-        set_rule(self.multiworld.get_location("ENT PointClicker", self.player), lambda state: state.has("FTPBounce", self.player))
-        set_rule(self.multiworld.get_location("ENT eOS Intro", self.player), lambda state: state.has("eosDeviceScan", self.player))
-        set_rule(self.multiworld.get_location("ENT Naix", self.player), lambda state: state.has("eosDeviceScan", self.player))
+        # Entropy Mission Rules
+        set_rule(self.multiworld.get_location("ENT PointClicker", self.player),
+        lambda state: state.has("FTPBounce", self.player))
+
+        set_rule(self.multiworld.get_location("ENT eOS Intro", self.player),
+        lambda state: state.has("eosDeviceScan", self.player))
+
+        set_rule(self.multiworld.get_location("ENT Naix", self.player),
+        lambda state: state.has("eosDeviceScan", self.player))
 
         # CSEC
         csec_region = Region("CSEC", self.player, self.multiworld)
@@ -123,26 +138,13 @@ class HacknetWorld(World):
 
         # Entropy -> CSEC
         entropy_region.add_exits({"CSEC": "CSEC CFC Herbs and Spices"},
-        {"CSEC": lambda state: state.has("WebServerWorm", self.player) and state.has("SQL_MemCorrupt", self.player)
-        and state.has("FTPBounce", self.player) and state.has("eosDeviceScan", self.player)})
+        {"CSEC": lambda state:
+        state.has("WebServerWorm", self.player) and
+        state.has("SQL_MemCorrupt", self.player) and
+        state.has("FTPBounce", self.player) and
+        state.has("eosDeviceScan", self.player)})
 
-        #entropy_region.connect(csec_region)
-
-        for loc in range(16):
-            offset = 10
-
-            real_location = {k:v for (k,v) in location_table.items() if v[1] == (loc + offset)}
-            loc_name = list(real_location.keys())[0]
-            loc_data = next(iter(real_location.values()))
-
-            csec_region.locations.append(HacknetLocation(self.player, loc_name, loc_data, csec_region))
-
-        if shuffle_postgame is True:
-            psylance_location = {k:v for (k,v) in location_table.items() if v[1] == 47}
-            psylance_loc_name = "CSEC Subvert Psylance Investigation"
-            psylance_loc_data = next(iter(psylance_location.values()))
-
-            csec_region.locations.append(HacknetLocation(self.player, psylance_loc_name, psylance_loc_data, csec_region))
+        assign_regions("CSEC", csec_region)
 
         # VBit - Finale
         vbit_region = Region("VBit", self.player, self.multiworld)
@@ -151,24 +153,18 @@ class HacknetWorld(World):
         # CSEC -> VBit
         csec_region.add_exits({"VBit": "VBIT Foundation"},
         {"VBit": lambda state:
-        state.has("KBTPortTest", self.player) and state.has("Decypher", self.player) and state.has("DECHead", self.player)})
+        state.has("KBTPortTest", self.player) and
+        state.has("Decypher", self.player) and
+        state.has("DECHead", self.player)})
 
         # VBit Locations
-        for loc in range(7):
-            offset = 24
+        assign_regions("VBit", vbit_region)
 
-            real_location = {k:v for (k,v) in location_table.items() if v[1] == (loc + offset)}
-            loc_name = list(real_location.keys())[0]
-            loc_data = next(iter(real_location.values()))
+        vbit_region.locations.append(HacknetLocation(self.player, "VBIT Finish Sequencer",
+        ("VBit", None, False, False, False), vbit_region))
 
-            if shuffle_postgame is False and loc_name == "VBIT Reunion":
-                continue
-
-            vbit_region.locations.append(HacknetLocation(self.player, loc_name, loc_data, vbit_region))
-
-        vbit_region.locations.append(HacknetLocation(self.player, "VBIT Finish Sequencer", ("VBit", None, False, False, False), vbit_region))
-
-        set_rule(self.multiworld.get_location("VBIT Finish Sequencer", self.player), lambda state: self.multiworld.get_location("VBIT Foundation", self.player).can_reach(state))
+        set_rule(self.multiworld.get_location("VBIT Finish Sequencer", self.player),
+        lambda state: self.multiworld.get_location("VBIT Foundation", self.player).can_reach(state))
 
         if include_labs is False:
             return None
@@ -179,46 +175,46 @@ class HacknetWorld(World):
 
         # Entropy -> Labyrinths
         entropy_region.add_exits({"Labyrinths": "LABS Finish Kaguya Trials"},
-        {"Labyrinths": lambda state: state.has("FTPBounce", self.player) and state.has("eosDeviceScan", self.player)
-        and state.has("FTPSprint", self.player) and state.has("TorrentStreamInjector", self.player)})
+        {"Labyrinths": lambda state:
+        state.has("FTPBounce", self.player) and
+        state.has("eosDeviceScan", self.player) and
+        state.has("FTPSprint", self.player) and
+        state.has("TorrentStreamInjector", self.player)})
 
+        # CSEC -> Labyrinths
         csec_region.connect(labs_region, rule=lambda state:
-        state.has("FTPSprint", self.player) and state.has("TorrentStreamInjector", self.player))
+        state.has("FTPSprint", self.player) and
+        state.has("TorrentStreamInjector", self.player))
+
+        # Labyrinths -> CSEC (or Entropy)
         labs_region.connect(csec_region, rule=lambda state:
-        state.has("SSLTrojan",self.player) and self.multiworld.get_location("LABS Take Flight", self.player).can_reach(state))
+        state.has("SSLTrojan",self.player) and
+        self.multiworld.get_location("LABS Take Flight", self.player).can_reach(state))
 
-        for loc in range(14):
-            offset = 33
+        # Assign Labyrinths locations
+        assign_regions("Labyrinths", labs_region)
 
-            if shuffle_postgame is False and loc_name == "LABS Break Into Gibson":
-                continue
-
-            real_location = {k:v for (k,v) in location_table.items() if v[1] == (loc + offset)}
-            loc_name = list(real_location.keys())[0]
-            loc_data = next(iter(real_location.values()))
-
-            labs_region.locations.append(HacknetLocation(self.player, loc_name, loc_data, labs_region))
-
+        # Require Labyrinths exes for the final Labs mission
         set_rule(self.multiworld.get_location("LABS Take Flight", self.player), lambda state:
-        state.has("PacificPortcrusher", self.player) and state.has("MemDumpGenerator", self.player) and state.has("MemForensics", self.player))
-
-        if shuffle_postgame is True:
-            gibson_location = {k:v for (k,v) in location_table.items() if v[1] == 49}
-            gibson_loc_name = "LABS Break Into Gibson"
-            gibson_loc_data = next(iter(gibson_location.values()))
-
-            labs_region.locations.append(HacknetLocation(self.player, gibson_loc_name, gibson_loc_data, labs_region))
+        state.has("PacificPortcrusher", self.player) and
+        state.has("MemDumpGenerator", self.player) and
+        state.has("MemForensics", self.player))
 
     def generate_basic(self):
         win_condition = get_option_value(self.multiworld, self.player, "victory_condition")
 
-        self.multiworld.get_location("VBIT Finish Sequencer", self.player).place_locked_item(self.create_event("Stop PortHack.Heart"))
+        self.multiworld.get_location("VBIT Finish Sequencer", self.player).place_locked_item(
+            self.create_event("Stop PortHack.Heart"))
 
         if win_condition == 1:
-            self.multiworld.completion_condition[self.player] = lambda state: state.has("Stop PortHack.Heart", self.player)
+            self.multiworld.completion_condition[self.player] = lambda state: state.has(
+                "Stop PortHack.Heart", self.player)
         elif win_condition == 2:
-            self.multiworld.completion_condition[self.player] = lambda state: state.has("Watched Labs Credits", self.player)
+            self.multiworld.completion_condition[self.player] = lambda state: state.has(
+                "Watched Labs Credits", self.player)
         elif win_condition == 3:
-            self.multiworld.completion_condition[self.player] = lambda state: state.has("Gained Gibson Admin", self.player)
-        else:
-            self.multiworld.completion_condition[self.player] = lambda state: state.has("Stop PortHack.Heart", self.player)
+            self.multiworld.completion_condition[self.player] = lambda state: state.has(
+                "Gained Gibson Admin", self.player)
+        else: # Default to Heartstopper
+            self.multiworld.completion_condition[self.player] = lambda state: state.has(
+                "Stop PortHack.Heart", self.player)
