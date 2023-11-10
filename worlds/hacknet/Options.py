@@ -16,8 +16,8 @@ class GoalPost(Choice):
     The ultimate goal for your Archipelago run.
 
     Heartstopper - Base game, stop PortHack's heart
-    AltitudeLoss - Labyrinths, reach the credits
-    Veteran - Labyrinths, hack into The Gibson
+    AltitudeLoss - Labyrinths, reach the credits (overrides "Include Labyrinths")
+    Veteran - Labyrinths, hack into The Gibson (same as above, overrides "Shuffle Postgame")
     Completionist - Heartstopper and Veteran
     """
     display_name = "Goal/Victory Condition"
@@ -32,6 +32,15 @@ class ShuffleAchievements(Toggle):
     This doesn't include unaviodable achievements, such as joining Entropy.
     """
     display_name = "Shuffle Achievements"
+
+class ShuffleNodes(Toggle):
+    """
+    Shuffles secret nodes into the location pool.
+    To "check" these nodes, you must gain administrator access to them.
+    However you do that, is up to you.
+    Respects "shuffle postgame" and "include labyrinths"
+    """
+    display_name = "Shuffle Nodes"
 
 class DeathLink(Toggle):
     """
@@ -65,6 +74,7 @@ hacknet_options: Dict[str, type] = {
     "include_labyrinths": IncludeLabsContent,
     "victory_condition": GoalPost,
     "shuffle_achievements": ShuffleAchievements,
+    "shuffle_nodes": ShuffleNodes,
     "death_link": DeathLink,
     "shuffle_executables": ExecutableShuffle,
     "shuffle_postgame": ShufflePostGameMissions

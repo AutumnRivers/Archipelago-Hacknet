@@ -68,9 +68,11 @@ class HacknetWorld(World):
         shuffle_achievements = get_option_value(self.multiworld, self.player, "shuffle_achievements")
         include_labs = get_option_value(self.multiworld, self.player, "include_labyrinths")
         shuffle_postgame = get_option_value(self.multiworld, self.player, "shuffle_postgame")
+        shuffle_nodes = get_option_value(self.multiworld, self.player, "shuffle_nodes")
+        win_condition = get_option_value(self.multiworld, self.player, "victory_condition")
         exclude_locations = ["VBIT Finish Sequencer"]
 
-        if shuffle_postgame is False:
+        if shuffle_postgame is False and win_condition <= 2:
             exclude_locations.append("LABS Break Into Gibson")
             exclude_locations.append("CSEC Subvert Psylance Investigation")
             exclude_locations.append("VBIT Reunion")
@@ -81,7 +83,13 @@ class HacknetWorld(World):
             print(f"Assigning locations for {category} Region")
 
             for loc in region_locs:
-                if loc in exclude_locations:
+                if loc in exclude_locations or (
+                    shuffle_achievements is False and
+                    region_locs[loc][3] is not False # Achievement = True
+                ) or (
+                    shuffle_nodes is False and
+                    loc.startswith("NODE")
+                ):
                     continue
 
                 loc_name = loc
@@ -95,32 +103,16 @@ class HacknetWorld(World):
         menu_region = Region("Menu", self.player, self.multiworld)
         self.multiworld.regions.append(menu_region)
 
-        if shuffle_achievements is not False:
-            assign_regions("Achievements", menu_region)
-
-        # Add Intro Completion
-        menu_region.locations.append(HacknetLocation(
-            self.player, "INTRO Complete Introduction", ("Intro", 56, False, False, True), menu_region))
+        assign_regions("Intro", menu_region)
 
         # Entropy
         entropy_region = Region("Entropy", self.player, self.multiworld)
         self.multiworld.regions.append(entropy_region)
 
-        menu_region.add_exits({"Entropy": "ENT Intro / Confirmation"},
-        {"Entropy": lambda state: state.has("SSHCrack", self.player)})
-
         # Require SSHCrack for Entropy's entrance
         menu_region.connect(entropy_region, rule=lambda state: state.has("SSHCrack", self.player))
 
         assign_regions("Entropy", entropy_region)
-
-        # Naix Recovery Event
-        naix_recover_location = {k:v for (k,v) in location_table.items() if v[1] == 48}
-        naix_loc_name = "NAIX Recover"
-        naix_loc_data = next(iter(naix_recover_location.values()))
-
-        # Add Naix to Entropy
-        entropy_region.locations.append(HacknetLocation(self.player, naix_loc_name, naix_loc_data, entropy_region))
 
         # Entropy Mission Rules
         set_rule(self.multiworld.get_location("ENT PointClicker", self.player),
@@ -166,7 +158,7 @@ class HacknetWorld(World):
         set_rule(self.multiworld.get_location("VBIT Finish Sequencer", self.player),
         lambda state: self.multiworld.get_location("VBIT Foundation", self.player).can_reach(state))
 
-        if include_labs is False:
+        if include_labs is False and win_condition == 1:
             return None
 
         # Labyrinths
@@ -206,13 +198,13 @@ class HacknetWorld(World):
         self.multiworld.get_location("VBIT Finish Sequencer", self.player).place_locked_item(
             self.create_event("Stop PortHack.Heart"))
 
-        if win_condition == 1:
+        if win_condition == 1: # Heartstopper
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
                 "Stop PortHack.Heart", self.player)
-        elif win_condition == 2:
+        elif win_condition == 2: # Altitude Loss
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
                 "Watched Labs Credits", self.player)
-        elif win_condition == 3:
+        elif win_condition == 3: # Veteran
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
                 "Gained Gibson Admin", self.player)
         else: # Default to Heartstopper

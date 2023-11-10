@@ -83,13 +83,29 @@ location_table = OrderedDict([
     ("STRK CoelTrain Recovery", ("Labyrinths", 49, True, False, True)),
 
     # Achievements
-    ("ACHV Quickdraw", ("Achievements", 50, False, True, False)),
-    ("ACHV To the Wire", ("Achievements", 51, False, True, False)),
-    ("ACHV Makeover", ("Achievements", 52, False, True, False)),
-    ("ACHV PointClicker", ("Achievements", 53, False, True, True)),
-    ("ACHV You better not have clicked for those...", ("Achievements", 54, False, True, False)),
-    ("ACHV Rude", ("Achievements", 55, False, True, False)),
+    ("ACHV To the Wire", ("Entropy", 51, False, True, False)),
+    ("ACHV Makeover", ("Entropy", 52, False, True, False)),
+    ("ACHV PointClicker", ("Entropy", 53, False, True, True)),
+    ("ACHV You better not have clicked for those...", ("Entropy", 54, False, True, False)),
+    ("ACHV Rude", ("Entropy", 55, False, True, False)),
 
-    ("INTRO Complete Introduction", ("Intro", 56, False, False, True))
+    # Intro (aka Pre-Entropy)
+    ("INTRO Complete Introduction", ("Intro", 56, False, False, True)),
+    ("ACHV Quickdraw", ("Intro", 50, False, True, False)),
+
+    # This isn't really "unavoidable," but it's so piss-easy and early, it may as well be a free priority check.
+    # "Good First Item" as The Witness Randomizer dev calls it
+    ("NODE Entropy Asset Cache", ("Intro", 57, False, False, True)),
+
+    # Other secret nodes
+    ("NODE Timekeeper's Vault", ("CSEC", 58, False, False, False)), # Clock
+    ("NODE Polar Star / Trial of Patience", ("CSEC", 59, False, False, False)), # Polar Star
+    ("NODE Polar Star / Trial of Haste", ("CSEC", 60, False, False, False)), # Polar Star isn't "secret"
+    ("NODE Polar Star / Trial of Focus", ("CSEC", 61, False, False, False)), # but we may as well,
+    ("NODE Polar Star / Trial of Dilligence", ("CSEC", 62, False, False, False)), # what's the harm?
+    ("NODE CCC Hacksquad Dump", ("CSEC", 63, False, False, False)), # Honey Pot
+
+    ("NODE Coel_Gateway", ("Labyrinths", 64, True, False, False)), # Coel
+    ("NODE Pellium Box", ("Labyrinths", 65, True, False, False)), # Naix Memory Dump
 
 ])

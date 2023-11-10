@@ -79,10 +79,14 @@ item_table = {
     "Clock" : ("aesthetic", 116, False),
     "HexClock" : ("aesthetic", 117, False),
 
-    "SecurityTracer" : ("junk", 118, False),
-    "HacknetEXE" : ("junk", 127, False),
+    "SecurityTracer" : ("junk", 118, False), # Pathfinder patches the glitch with this, so it is also junk
+    "HacknetEXE" : ("junk", 127, False), # This Item Could Not Be More Useless
+
     # Forces the player into the Emergency Trace Aversion System (CSEC_Member flag is applied on game load w/ mod)
     "ETASTrap" : ("trap", 119, False),
+    
+    # Shows a fake "incoming connection" to the player. Give em a bit of a heart attack.
+    "Fake Connect" : ("trap", 128, False),
 
     # Labyrinths Programs
     "TorrentStreamInjector" : ("progression", 6881, True),
