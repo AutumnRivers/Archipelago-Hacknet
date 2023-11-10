@@ -51,6 +51,7 @@ Currently, the following games are supported:
 * Muse Dash
 * DOOM 1993
 * Terraria
+* Lingo
 * Hacknet
 
 For setup and instructions check out our [tutorials page](https://archipelago.gg/tutorial/).
