@@ -105,24 +105,9 @@ item_table = {
     "ClockV2" : ("aesthetic", 126, True),
 
     # Events
-    "Finish Tutorial" : ("progression", None, False),
-    "Join Entropy" : ("progression", None, False),
-    "Hacked by Naix" : ("progression", None, False),
-    "Join CSEC" : ("progression", None, False),
-    "Join /el Sec" : ("useful", None, False),
-    "Get Sequencer" : ("progression", None, False),
     "Stop PortHack.Heart" : ("progression", None, False),
 
     # Labs Events
-    "Finish Kaguya Trials" : ("progression", None, True),
-    "Finish Alchemists" : ("progression", None, True),
-    "CoelTrain Recovery" : ("progression", None, True),
-    "Altitude Loss" : ("progression", None, True),
-
-    "Crash The Plane" : ("progression", None, True),
-    "Save The Plane" : ("progression", None, True),
-    "Crash Both Planes" : ("progression", None, True),
-
     "Watched Labs Credits" : ("progression", None, True),
     "Gained Gibson Admin" : ("progression", None, True)
 }

@@ -210,3 +210,13 @@ class HacknetWorld(World):
         else: # Default to Heartstopper
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
                 "Stop PortHack.Heart", self.player)
+
+    def fill_slot_data(self):
+        slot_data = {}
+
+        for option_name in hacknet_options:
+            slot_data[option_name] = get_option_value(
+                self.multiworld, self.player, option_name
+            )
+        
+        return slot_data
