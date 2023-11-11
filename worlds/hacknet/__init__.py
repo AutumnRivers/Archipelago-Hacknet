@@ -198,6 +198,12 @@ class HacknetWorld(World):
         self.multiworld.get_location("VBIT Finish Sequencer", self.player).place_locked_item(
             self.create_event("Stop PortHack.Heart"))
 
+        self.multiworld.get_location("LABS Altitude Loss", self.player).place_locked_item(
+            self.create_event("Watched Labs Credits"))
+
+        self.multiworld.get_location("LABS Break Into Gibson", self.player).place_locked_item(
+            self.create_event("Gained Gibson Admin"))
+
         if win_condition == 1: # Heartstopper
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
                 "Stop PortHack.Heart", self.player)
@@ -206,6 +212,11 @@ class HacknetWorld(World):
                 "Watched Labs Credits", self.player)
         elif win_condition == 3: # Veteran
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
+                "Gained Gibson Admin", self.player)
+        elif win_condition == 4: # Completionist
+            self.multiworld.completion_condition[self.player] = lambda state: state.has(
+                "Stop PortHack.Heart", self.player) and state.has(
+                "Watched Labs Creits", self.player) and state.has(
                 "Gained Gibson Admin", self.player)
         else: # Default to Heartstopper
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
