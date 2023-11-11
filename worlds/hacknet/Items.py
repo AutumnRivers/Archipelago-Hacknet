@@ -104,6 +104,11 @@ item_table = {
     "Tuneswap" : ("aesthetic", 125, True),
     "ClockV2" : ("aesthetic", 126, True),
 
+    # Filler
+    "l33t hax0r skillz" : ("filler", 990, False),
+    "the sudden urge to play PointClicker" : ("filler", 991, False),
+    "matt" : ("filler", 992, False),
+
     # Events
     "Stop PortHack.Heart" : ("progression", None, False),
 

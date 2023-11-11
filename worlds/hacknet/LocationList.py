@@ -74,9 +74,13 @@ location_table = OrderedDict([
     ("LABS Take Flight Cont.", ("Labyrinths", 44, True, False, True)),
     ("LABS Altitude Loss", ("Labyrinths", 45, True, False, True)),
 
+    ("LABS Remote Shutdown", ("Labyrinths", None, True, False, False)),
+
     # Post-Story Labs
     ("LABS Break Into Gibson", ("Labyrinths", 46, True, False, False)),
     ("CSEC Subvert Psylance Investigation", ("CSEC", 47, True, False, False)),
+
+    ("LABS Broke Into Gibson", ("Labyrinths", None, True, False, False)),
 
     # One-Off Events
     ("NAIX Recover", ("Entropy", 48, False, False, False)),
@@ -91,6 +95,10 @@ location_table = OrderedDict([
 
     # Intro (aka Pre-Entropy)
     ("INTRO Complete Introduction", ("Intro", 56, False, False, True)),
+    ("INTRO First Contact", ("Intro", 66, False, False, False)),
+    ("INTRO Maiden Flight", ("Intro", 67, False, False, True)),
+    ("INTRO Getting Some Tools Together", ("Intro", 68, False, False, True)),
+    ("INTRO Something In Return", ("Intro", 69, False, False, False)),
     ("ACHV Quickdraw", ("Intro", 50, False, True, False)),
 
     # This isn't really "unavoidable," but it's so piss-easy and early, it may as well be a free priority check.

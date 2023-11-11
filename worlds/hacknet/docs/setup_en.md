@@ -45,3 +45,5 @@ If it failed to connect, you'll see the text "Failed to connect" and an error me
 Non-modded saves are incompatible with this mod. If you're starting a new Archipelago session, you should start a new session in-game, too.
 
 You can run `archistatus` in the terminal at any time to check your connection status to Archipelago.
+
+Lost a program? Fret not! You can download any unlocked programs via the in-game Archipelago Backups server: `> connect archipelago.gg`

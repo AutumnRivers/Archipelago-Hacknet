@@ -1,3 +1,5 @@
+import random
+
 from BaseClasses import Item, Tutorial, ItemClassification, Region, Entrance
 
 from ..AutoWorld import World, WebWorld
@@ -23,7 +25,8 @@ class HacknetWeb(WebWorld):
 
 class HacknetWorld(World):
     """
-    Hacknet is a terminal-based hacking simulator. Includes Labyrinths DLC support!
+    Hacknet is a terminal-based hacking simulator. Get placed into the dark and murky worlds of hackers in order to
+    investigate the disappearance of a well-known hacker. Includes support for the Labyrinths DLC campaign.
     """
     game = "Hacknet"
     topology_present = False
@@ -38,12 +41,14 @@ class HacknetWorld(World):
     location_name_to_id = {item_name: hacknet_loc_to_ap_id(data[1]) for item_name, data in location_table.items()}
     location_id_to_name = ap_id_to_hacknet_loc
 
+    etas_placed = 0
+
     # Rules
     def create_item(self, name: str) -> HacknetItem:
         hn_item = HacknetItem(name, self.player, item_table[name], False)
 
         if hn_item.index is not None:
-            print(f"Creating item: {hn_item}")
+            #print(f"Creating item: {hn_item}")
             return hn_item
 
     def create_event(self, event: str) -> HacknetItem:
@@ -51,6 +56,10 @@ class HacknetWorld(World):
 
     def create_items(self) -> None:
         exclude = [item for item in self.multiworld.precollected_items[self.player]]
+
+        exclude.append("l33t hax0r skillz")
+        exclude.append("the sudden urge to play PointClicker")
+        exclude.append("matt")
 
         item_pool: List[HacknetItem] = []
 
@@ -61,6 +70,18 @@ class HacknetWorld(World):
                 continue
             else:
                 item_pool.append(item)
+
+        while(self.etas_placed < 2):
+            self.etas_placed += 1
+            item_pool.append(self.create_item("ETASTrap"))
+
+        while((len(self.location_names) - len(item_pool) - len(exclude)) > 0):
+            item_pool.append(random.choice([
+                self.create_item("l33t hax0r skillz"),
+                self.create_item("the sudden urge to play PointClicker"),
+                self.create_item("matt"),
+                self.create_item("Fake Connect")
+            ]))
         
         self.multiworld.itempool += item_pool
 
@@ -80,7 +101,7 @@ class HacknetWorld(World):
         def assign_regions(category, target_region):
             region_locs = {k:v for (k,v) in location_table.items() if v[0] == (category)}
 
-            print(f"Assigning locations for {category} Region")
+            print(f"[Hacknet - Player {self.player}] Assigning locations for {category} Region")
 
             for loc in region_locs:
                 if loc in exclude_locations or (
@@ -110,7 +131,15 @@ class HacknetWorld(World):
         self.multiworld.regions.append(entropy_region)
 
         # Require SSHCrack for Entropy's entrance
-        menu_region.connect(entropy_region, rule=lambda state: state.has("SSHCrack", self.player))
+        menu_region.connect(entropy_region, rule=lambda state: 
+        state.has("SSHCrack", self.player) and state.has("FTPBounce", self.player))
+
+        set_rule(self.multiworld.get_location("INTRO Maiden Flight", self.player),
+        lambda state: state.has("SSHCrack", self.player))
+
+        if shuffle_nodes is not False:
+            set_rule(self.multiworld.get_location("NODE Entropy Asset Cache", self.player),
+            lambda state: state.has("SSHCrack", self.player))
 
         assign_regions("Entropy", entropy_region)
 
@@ -158,6 +187,9 @@ class HacknetWorld(World):
         set_rule(self.multiworld.get_location("VBIT Finish Sequencer", self.player),
         lambda state: self.multiworld.get_location("VBIT Foundation", self.player).can_reach(state))
 
+        #vbit_region.connect(csec_region, rule=lambda state:
+        #state.has("Stop PortHack.Heart", self.player))
+
         if include_labs is False and win_condition == 1:
             return None
 
@@ -186,11 +218,21 @@ class HacknetWorld(World):
         # Assign Labyrinths locations
         assign_regions("Labyrinths", labs_region)
 
+        labs_region.locations.append(HacknetLocation(self.player, "LABS Remote Shutdown",
+        ("Labyrinths", None, True, False, False), labs_region))
+
+        if shuffle_postgame is True:
+            labs_region.locations.append(HacknetLocation(self.player, "LABS Broke Into Gibson",
+            ("Labyrinths", None, True, False, False), labs_region))
+
         # Require Labyrinths exes for the final Labs mission
         set_rule(self.multiworld.get_location("LABS Take Flight", self.player), lambda state:
         state.has("PacificPortcrusher", self.player) and
         state.has("MemDumpGenerator", self.player) and
         state.has("MemForensics", self.player))
+
+        set_rule(self.multiworld.get_location("LABS Remote Shutdown", self.player),
+        lambda state: self.multiworld.get_location("LABS Take Flight", self.player).can_reach(state))
 
     def generate_basic(self):
         win_condition = get_option_value(self.multiworld, self.player, "victory_condition")
@@ -198,10 +240,10 @@ class HacknetWorld(World):
         self.multiworld.get_location("VBIT Finish Sequencer", self.player).place_locked_item(
             self.create_event("Stop PortHack.Heart"))
 
-        self.multiworld.get_location("LABS Altitude Loss", self.player).place_locked_item(
+        self.multiworld.get_location("LABS Remote Shutdown", self.player).place_locked_item(
             self.create_event("Watched Labs Credits"))
 
-        self.multiworld.get_location("LABS Break Into Gibson", self.player).place_locked_item(
+        self.multiworld.get_location("LABS Broke Into Gibson", self.player).place_locked_item(
             self.create_event("Gained Gibson Admin"))
 
         if win_condition == 1: # Heartstopper
@@ -215,9 +257,9 @@ class HacknetWorld(World):
                 "Gained Gibson Admin", self.player)
         elif win_condition == 4: # Completionist
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
-                "Stop PortHack.Heart", self.player) and state.has(
-                "Watched Labs Creits", self.player) and state.has(
-                "Gained Gibson Admin", self.player)
+                "Watched Labs Credits", self.player) and state.has(
+                "Gained Gibson Admin", self.player) and state.has(
+                "Stop PortHack.Heart", self.player)
         else: # Default to Heartstopper
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
                 "Stop PortHack.Heart", self.player)
