@@ -52,3 +52,14 @@ class HacknetLocation(Location):
         if item.code is None and self.address != None:
             return False
         return super().can_fill(state, item, check_access)
+
+def create_location_descriptions() -> dict:
+    location_descriptions = {}
+
+    for locat in location_table:
+        real_location = location_table[locat]
+
+        if len(real_location) >= 6:
+            location_descriptions[locat] = real_location[5]
+
+    return location_descriptions

@@ -37,7 +37,7 @@ class HacknetItem(Item):
 
         if name == "SSHCrack" or name == "FTPBounce":
             self.classification = ItemClassification.progression_skip_balancing
-        elif name == "ETASTrap":
+        elif advancement == "trap":
             self.classification = ItemClassification.trap
         elif advancement == "progression":
             self.classification = ItemClassification.progression

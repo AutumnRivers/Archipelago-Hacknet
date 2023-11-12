@@ -7,10 +7,12 @@ from NetUtils import SlotType
 from worlds.generic.Rules import set_rule, add_rule
 
 from .Items import HacknetItem, ap_id_to_hacknet_item, hacknet_item_to_ap_id, item_table
-from .Locations import HacknetLocation, ap_id_to_hacknet_loc, hacknet_loc_to_ap_id
+from .Locations import HacknetLocation, ap_id_to_hacknet_loc, hacknet_loc_to_ap_id, create_location_descriptions
 from .LocationList import location_table
 
 from .Options import hacknet_options, get_option_value
+
+from .Rules import set_rules, set_labs_rules, set_achv_rules
 
 class HacknetWeb(WebWorld):
     theme = "ice"
@@ -32,6 +34,8 @@ class HacknetWorld(World):
     topology_present = False
     web = HacknetWeb()
     data_version = 1
+
+    location_descriptions = create_location_descriptions()
 
     option_definitions = hacknet_options
 
@@ -132,10 +136,10 @@ class HacknetWorld(World):
 
         # Require SSHCrack for Entropy's entrance
         menu_region.connect(entropy_region, rule=lambda state: 
-        state.has("SSHCrack", self.player) and state.has("FTPBounce", self.player))
-
-        set_rule(self.multiworld.get_location("INTRO Maiden Flight", self.player),
-        lambda state: state.has("SSHCrack", self.player))
+        state.has("SSHCrack", self.player) and (
+            state.has("FTPBounce", self.player) or
+            state.has("FTPSprint", self.player))
+        )
 
         if shuffle_nodes is not False:
             set_rule(self.multiworld.get_location("NODE Entropy Asset Cache", self.player),
@@ -143,27 +147,15 @@ class HacknetWorld(World):
 
         assign_regions("Entropy", entropy_region)
 
-        # Entropy Mission Rules
-        set_rule(self.multiworld.get_location("ENT PointClicker", self.player),
-        lambda state: state.has("FTPBounce", self.player))
-
-        set_rule(self.multiworld.get_location("ENT eOS Intro", self.player),
-        lambda state: state.has("eosDeviceScan", self.player))
-
-        set_rule(self.multiworld.get_location("ENT Naix", self.player),
-        lambda state: state.has("eosDeviceScan", self.player))
-
         # CSEC
         csec_region = Region("CSEC", self.player, self.multiworld)
         self.multiworld.regions.append(csec_region)
 
         # Entropy -> CSEC
-        entropy_region.add_exits({"CSEC": "CSEC CFC Herbs and Spices"},
-        {"CSEC": lambda state:
+        entropy_region.connect(csec_region, rule=lambda state:
         state.has("WebServerWorm", self.player) and
         state.has("SQL_MemCorrupt", self.player) and
-        state.has("FTPBounce", self.player) and
-        state.has("eosDeviceScan", self.player)})
+        state.has("eosDeviceScan", self.player))
 
         assign_regions("CSEC", csec_region)
 
@@ -184,11 +176,10 @@ class HacknetWorld(World):
         vbit_region.locations.append(HacknetLocation(self.player, "VBIT Finish Sequencer",
         ("VBit", None, False, False, False), vbit_region))
 
-        set_rule(self.multiworld.get_location("VBIT Finish Sequencer", self.player),
-        lambda state: self.multiworld.get_location("VBIT Foundation", self.player).can_reach(state))
+        set_rules(self.multiworld, self.player)
 
-        #vbit_region.connect(csec_region, rule=lambda state:
-        #state.has("Stop PortHack.Heart", self.player))
+        if shuffle_achievements is True:
+            set_achv_rules(self.multiworld, self.player)
 
         if include_labs is False and win_condition == 1:
             return None
@@ -206,9 +197,9 @@ class HacknetWorld(World):
         state.has("TorrentStreamInjector", self.player)})
 
         # CSEC -> Labyrinths
-        csec_region.connect(labs_region, rule=lambda state:
-        state.has("FTPSprint", self.player) and
-        state.has("TorrentStreamInjector", self.player))
+        # csec_region.connect(labs_region, rule=lambda state:
+        # state.has("FTPSprint", self.player) and
+        # state.has("TorrentStreamInjector", self.player))
 
         # Labyrinths -> CSEC (or Entropy)
         labs_region.connect(csec_region, rule=lambda state:
@@ -225,14 +216,7 @@ class HacknetWorld(World):
             labs_region.locations.append(HacknetLocation(self.player, "LABS Broke Into Gibson",
             ("Labyrinths", None, True, False, False), labs_region))
 
-        # Require Labyrinths exes for the final Labs mission
-        set_rule(self.multiworld.get_location("LABS Take Flight", self.player), lambda state:
-        state.has("PacificPortcrusher", self.player) and
-        state.has("MemDumpGenerator", self.player) and
-        state.has("MemForensics", self.player))
-
-        set_rule(self.multiworld.get_location("LABS Remote Shutdown", self.player),
-        lambda state: self.multiworld.get_location("LABS Take Flight", self.player).can_reach(state))
+        set_labs_rules(self.multiworld, self.player)
 
     def generate_basic(self):
         win_condition = get_option_value(self.multiworld, self.player, "victory_condition")
