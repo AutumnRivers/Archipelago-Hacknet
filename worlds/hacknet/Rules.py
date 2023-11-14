@@ -78,7 +78,7 @@ def set_rules(multiworld: MultiWorld, player: int) -> None:
     # Required Executables: SMTPOverflow
     set_rule(multiworld.get_location("ENT Naix", player),
     lambda state: multiworld.get_location("ENT eOS Intro", player).can_reach(state)
-    and state.has("SMTPOverflow", player) and 
+    and (state.has("SMTPOverflow", player) or state.has("WebServerWorm", player)) and 
     (state.has("FTPBounce", player) or state.has("FTPSprint", player)))
 
     # Naix -> Naix Recovery
@@ -246,7 +246,8 @@ def set_labs_rules(multiworld: MultiWorld, player: int) -> None:
     set_rule(multiworld.get_location("LABS Finish Kaguya Trials", player),
     lambda state: (multiworld.get_location("ENT eOS Intro", player).can_reach(state)
     or multiworld.get_location("CSEC Rod of Asclepius", player).can_reach(state))
-    and state.has("TorrentStreamInjector", player))
+    and state.has("TorrentStreamInjector", player)
+    and state.has("Kaguya Trials Access", player))
 
     # Kaguya Trials -> The Ricer
     # Required Executables: None
@@ -356,6 +357,15 @@ def set_labs_rules(multiworld: MultiWorld, player: int) -> None:
 
     for locat in multiworld.get_region("VBit", player).locations:
         forbid_items(locat, labs_programs)
+
+    # ----- Don't place Kaguya Trials Access in VBIT -----
+    for locat in multiworld.get_region("VBit", player).locations:
+        forbid_item(locat, "Kaguya Trials Access", player)
+
+    # ----- Don't place WebServerWorm in Labyrinths -----
+    # (User needs it for Naix, and the Naix contract can't be abandoned)
+    for locat in multiworld.get_region("Labyrinths", player).locations:
+        forbid_item(locat, "WebServerWorm", player)
 
 def set_achv_rules(multiworld: MultiWorld, player: int) -> None:
     # Options

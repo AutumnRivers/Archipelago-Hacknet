@@ -96,6 +96,7 @@ item_table = {
     "MemForensics" : ("progression", 121, True),
     "SignalScrambler" : ("progression", 32, True),
     "PacificPortcrusher" : ("progression", 192, True),
+    "Kaguya Trials Access" : ("progression", 193, True),
 
     "ComShell" : ("useful", 122, True),
     "NetmapOrganizer" : ("useful", 123, True),
