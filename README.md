@@ -52,6 +52,7 @@ Currently, the following games are supported:
 * DOOM 1993
 * Terraria
 * Lingo
+* Pokémon Emerald
 * Hacknet
 
 For setup and instructions check out our [tutorials page](https://archipelago.gg/tutorial/).
