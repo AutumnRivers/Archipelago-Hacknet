@@ -1,8 +1,10 @@
 from typing import Dict, Union
 
+from dataclasses import dataclass
+
 from BaseClasses import MultiWorld
 
-from Options import Option, Choice, Toggle, DefaultOnToggle
+from Options import Option, Choice, Toggle, DefaultOnToggle, PerGameCommonOptions
 
 class IncludeLabsContent(DefaultOnToggle):
     """
@@ -16,9 +18,9 @@ class GoalPost(Choice):
     The ultimate goal for your Archipelago run.
 
     Heartstopper - Base game, stop PortHack's heart
-    AltitudeLoss - Labyrinths, reach the credits (overrides "Include Labyrinths")
-    Veteran - Labyrinths, hack into The Gibson (same as above, overrides "Shuffle Postgame")
-    Completionist - Heartstopper and Veteran
+    Altitude Loss - Labyrinths, reach the credits
+    Veteran - Labyrinths, hack into The Gibson
+    Completionist - Heartstopper, Altitude Loss, and Veteran
     """
     display_name = "Goal/Victory Condition"
     option_heartstopper = 1
@@ -35,9 +37,10 @@ class ShuffleAchievements(Toggle):
 
 class ShuffleNodes(Toggle):
     """
-    Shuffles secret nodes into the location pool.
-    To "check" these nodes, you must gain administrator access to them.
+    Shuffles secret nodes into the location pool. To "check" these nodes, you must gain administrator access to them.
+
     However you do that, is up to you.
+
     Respects "shuffle postgame" and "include labyrinths"
     """
     display_name = "Shuffle Nodes"
@@ -54,7 +57,7 @@ class ExecutableShuffle(Choice):
     """
     What types of executables to shuffle.
 
-    Shuffle All - (Default, Recommended) Shuffle all executables.
+    Shuffle All - (Default, Recommended) Shuffle all executables. 
     (Clock, SecurityTracer, etc.)
     Progression + Useful - OpShell, Tracekill, etc.
     Only Progression - FTPBounce, WebServerWorm, etc.
@@ -70,25 +73,12 @@ class ShufflePostGameMissions(Toggle):
     """
     display_name = "Shuffle Postgame"
 
-hacknet_options: Dict[str, type] = {
-    "include_labyrinths": IncludeLabsContent,
-    "victory_condition": GoalPost,
-    "shuffle_achievements": ShuffleAchievements,
-    "shuffle_nodes": ShuffleNodes,
-    "death_link": DeathLink,
-    "shuffle_executables": ExecutableShuffle,
-    "shuffle_postgame": ShufflePostGameMissions
-}
-
-def is_option_enabled(world: MultiWorld, player: int, name: str) -> bool:
-    return get_option_value(world, player, name) > 0
-
-def get_option_value(world: MultiWorld, player: int, name: str) -> Union[bool, int]:
-    option = getattr(world, name, None)
-
-    if option is None:
-        return 0
-
-    if issubclass(hacknet_options[name], Toggle) or issubclass(hacknet_options[name], DefaultOnToggle):
-        return bool(option[player].value)
-    return option[player].value
+@dataclass
+class HacknetOptions(PerGameCommonOptions):
+    include_labyrinths: IncludeLabsContent
+    victory_condition: GoalPost
+    shuffle_achievements: ShuffleAchievements
+    shuffle_nodes: ShuffleNodes
+    shuffle_executables: ExecutableShuffle
+    shuffle_postgame: ShufflePostGameMissions
+    death_link: DeathLink

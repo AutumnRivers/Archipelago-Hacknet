@@ -35,9 +35,7 @@ class HacknetItem(Item):
         # (advancement type, index, is exclusive to Labyrinths)
         (advancement, index, isLabs) = data
 
-        if name == "SSHCrack" or name == "FTPBounce":
-            self.classification = ItemClassification.progression_skip_balancing
-        elif advancement == "trap":
+        if advancement == "trap" or advancement == "junk":
             self.classification = ItemClassification.trap
         elif advancement == "progression":
             self.classification = ItemClassification.progression
@@ -79,8 +77,8 @@ item_table = {
     "Clock" : ("aesthetic", 116, False),
     "HexClock" : ("aesthetic", 117, False),
 
-    "SecurityTracer" : ("junk", 118, False), # Pathfinder patches the glitch with this, so it is also junk
-    "HacknetEXE" : ("junk", 127, False), # This Item Could Not Be More Useless
+    "SecurityTracer" : ("trap", 118, False), # Pathfinder patches the glitch with this, so it is also junk
+    "HacknetEXE" : ("filler", 127, False), # This Item Could Not Be More Useless
 
     # Forces the player into the Emergency Trace Aversion System (CSEC_Member flag is applied on game load w/ mod)
     "ETASTrap" : ("trap", 119, False),
@@ -106,9 +104,9 @@ item_table = {
     "ClockV2" : ("aesthetic", 126, True),
 
     # Filler
-    "l33t hax0r skillz" : ("filler", 990, False),
-    "the sudden urge to play PointClicker" : ("filler", 991, False),
-    "matt" : ("filler", 992, False),
+    "l33t hax0r skillz" : ("junk", 990, False),
+    "the sudden urge to play PointClicker" : ("junk", 991, False),
+    "Random IRC Log": ("filler", 993, False),
 
     # Events
     "Stop PortHack.Heart" : ("progression", None, False),

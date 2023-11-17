@@ -28,6 +28,7 @@
 *.apsave
 *.BIN
 *.puml
+*.apworld
 
 setups
 build

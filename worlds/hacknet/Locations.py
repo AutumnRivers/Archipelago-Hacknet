@@ -1,5 +1,4 @@
 from .LocationList import location_table
-from .Options import is_option_enabled, get_option_value
 
 from BaseClasses import Location, LocationProgressType, MultiWorld
 

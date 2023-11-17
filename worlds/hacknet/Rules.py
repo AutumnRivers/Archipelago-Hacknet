@@ -3,7 +3,9 @@ from BaseClasses import MultiWorld
 
 from .LocationList import location_table
 from .Locations import HacknetLocation
-from .Options import get_option_value, hacknet_options
+from .Options import HacknetOptions
+
+from ..AutoWorld import World
 
 # --------------------------------------------------- Rules ---------------------------------------------------
 # Rules do not need to be repeated - if a user is in Entropy, it's assumed they already have FTP and SSHCrack
@@ -18,13 +20,11 @@ from .Options import get_option_value, hacknet_options
 # enabled, it ends with Altitude Loss. The player will be plopped back into Entropy or CSEC and will return to the
 # original questline with its original rules.
 
-def set_rules(multiworld: MultiWorld, player: int) -> None:
+def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int) -> None:
     # Options
-    shuffle_achievements = get_option_value(multiworld, player, "shuffle_achievements")
-    include_labs = get_option_value(multiworld, player, "include_labyrinths")
-    shuffle_postgame = get_option_value(multiworld, player, "shuffle_postgame")
-    shuffle_nodes = get_option_value(multiworld, player, "shuffle_nodes")
-    win_condition = get_option_value(multiworld, player, "victory_condition")
+    shuffle_postgame = options.shuffle_postgame
+    shuffle_nodes = options.shuffle_nodes
+    win_condition = options.victory_condition
 
     # ----- Intro Rules -----
     # Tutorial -> Maiden Flight
@@ -91,6 +91,9 @@ def set_rules(multiworld: MultiWorld, player: int) -> None:
     set_rule(multiworld.get_location("CSEC Invitation OR /el Sec Completion", player),
     lambda state: multiworld.get_location("ENT Naix", player).can_reach(state)
     and state.has("WebServerWorm", player) and state.has("SQL_MemCorrupt", player))
+
+    set_rule(multiworld.get_location("CSEC CFC Herbs and Spices", player),
+    lambda state: state.has("SMTPOverflow", player))
 
     # ----- CSEC Rules -----
     # CSEC Intro -> CSEC Set
@@ -182,16 +185,19 @@ def set_rules(multiworld: MultiWorld, player: int) -> None:
     # Termination -> Finish Sequencer
     if win_condition == 1 or win_condition == 4:
         set_rule(multiworld.get_location("VBIT Finish Sequencer", player),
-        lambda state: multiworld.get_location("VBIT Termination / Sequencer", player).can_reach(state))
+        lambda state: multiworld.get_location("VBIT Termination / Sequencer", player).can_reach(state)
+        and (state.has("FTPBounce", player) or state.has("FTPSprint", player)) and state.has("SSHCrack", player)
+        and state.has("SMTPOverflow", player) and state.has("WebServerWorm", player)
+        and state.has("KBTPortTest", player))
 
     # Post-Game Rules
-    if shuffle_postgame is True:
+    if shuffle_postgame:
         # Reunion
         set_rule(multiworld.get_location("VBIT Reunion", player),
         lambda state: multiworld.get_location("VBIT Termination / Sequencer", player).can_reach(state))
 
     # Node Rules
-    if shuffle_nodes is True:
+    if shuffle_nodes:
         # Intro
         set_rule(multiworld.get_location("NODE Entropy Asset Cache", player),
         lambda state: state.has("SSHCrack", player) or state.has("FTPBounce", player)
@@ -232,13 +238,11 @@ def set_rules(multiworld: MultiWorld, player: int) -> None:
     for locat in multiworld.get_region("Menu", player).locations:
         forbid_item(locat, "ETASTrap", player)
 
-def set_labs_rules(multiworld: MultiWorld, player: int) -> None:
+def set_labs_rules(multiworld: MultiWorld, options: HacknetOptions, player: int) -> None:
     # Options
-    shuffle_achievements = get_option_value(multiworld, player, "shuffle_achievements")
-    include_labs = get_option_value(multiworld, player, "include_labyrinths")
-    shuffle_postgame = get_option_value(multiworld, player, "shuffle_postgame")
-    shuffle_nodes = get_option_value(multiworld, player, "shuffle_nodes")
-    win_condition = get_option_value(multiworld, player, "victory_condition")
+    shuffle_postgame = options.shuffle_postgame
+    shuffle_nodes = options.shuffle_nodes
+    win_condition = options.victory_condition
 
     # ----- Labyrinths Rules -----
     # Entropy eOS Intro OR CSEC -> Kaguya Trials
@@ -337,8 +341,13 @@ def set_labs_rules(multiworld: MultiWorld, player: int) -> None:
             set_rule(multiworld.get_location("LABS Broke Into Gibson", player),
             lambda state: multiworld.get_location("LABS Break Into Gibson", player).can_reach(state))
 
+    labs_programs = [
+        "TorrentStreamInjector", "SSLTrojan", "SignalScrambler", "PacificPortcrusher",
+        "MemDumpGenerator", "MemForensics"
+    ]
+
     # ----- Labyrinths-related Node Rules -----
-    if shuffle_nodes is True:
+    if shuffle_nodes:
         set_rule(multiworld.get_location("NODE Coel_Gateway", player),
         lambda state: multiworld.get_location("LABS Altitude Loss", player).can_reach(state))
 
@@ -346,12 +355,15 @@ def set_labs_rules(multiworld: MultiWorld, player: int) -> None:
         lambda state: multiworld.get_location("ENT Naix", player).can_reach(state)
         and state.has("MemDumpGenerator", player) and state.has("MemForensics", player))
 
-    # ----- Don't place Labyrinths programs in CSEC/VBIT -----
-    labs_programs = [
-        "TorrentStreamInjector", "SSLTrojan", "SignalScrambler", "PacificPortcrusher",
-        "MemDumpGenerator", "MemForensics"
-    ]
+        # ----- Don't place Labyrinths execs in hidden nodes -----
+        # That's post-labs stuff, dude!
+        forbid_items(multiworld.get_location("NODE Coel_Gateway", player), labs_programs)
+        forbid_item(multiworld.get_location("NODE Coel_Gateway", player), "Kaguya Trials Access", player)
 
+        forbid_items(multiworld.get_location("NODE Pellium Box", player), labs_programs)
+        forbid_item(multiworld.get_location("NODE Pellium Box", player), "Kaguya Trials Access", player)
+
+    # ----- Don't place Labyrinths programs in CSEC/VBIT -----
     for locat in multiworld.get_region("CSEC", player).locations:
         forbid_items(locat, labs_programs)
 
@@ -362,14 +374,20 @@ def set_labs_rules(multiworld: MultiWorld, player: int) -> None:
     for locat in multiworld.get_region("VBit", player).locations:
         forbid_item(locat, "Kaguya Trials Access", player)
 
+    if shuffle_postgame and win_condition <= 2:
+        # ----- Don't place Labyrinths execs in The Gibson -----
+        # For the love of God, please.
+        forbid_items(multiworld.get_location("LABS Break Into Gibson", player), labs_programs)
+        forbid_item(multiworld.get_location("LABS Break Into Gibson", player), "Kaguya Trials Access", player)
+
     # ----- Don't place WebServerWorm in Labyrinths -----
     # (User needs it for Naix, and the Naix contract can't be abandoned)
     for locat in multiworld.get_region("Labyrinths", player).locations:
         forbid_item(locat, "WebServerWorm", player)
 
-def set_achv_rules(multiworld: MultiWorld, player: int) -> None:
+def set_achv_rules(multiworld: MultiWorld, options: HacknetOptions, player: int) -> None:
     # Options
-    shuffle_executables = get_option_value(multiworld, player, "shuffle_executables")
+    shuffle_executables = options.shuffle_executables
 
     # Makeover
     set_rule(multiworld.get_location("ACHV Makeover", player),
