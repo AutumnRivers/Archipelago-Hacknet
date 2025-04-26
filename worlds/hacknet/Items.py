@@ -110,6 +110,7 @@ item_table = {
 
     "Entropy VIP": ItemData(None, ItemClassification.progression, "Event", False), # Complete EVERY Entropy Mission
     "CSEC VIP": ItemData(None, ItemClassification.progression, "Event", False), # Complete EVERY CSEC Mission*
+    "CSEC Member ID": ItemData(None, ItemClassification.progression, "Event", False), # Join CSEC
     # *(Excluding Project Junebug, if exclude_junebug is enabled)
 
     # Executable Groups

@@ -1,6 +1,7 @@
-from BaseClasses import MultiWorld, ItemClassification
+from BaseClasses import MultiWorld, ItemClassification, CollectionState
+from Utils import visualize_regions
 
-from worlds.generic.Rules import set_rule, add_rule, forbid_items_for_player
+from worlds.generic.Rules import set_rule, forbid_items
 from worlds.AutoWorld import World
 
 from .Options import HacknetOptions
@@ -14,7 +15,7 @@ Entropy -> /EL SEC(!!!!!!!! VERY IMPORTANT)
 CSEC -> Labyrinths (if labs is enabled)
 Labyrinths/CSEC -> Bit/Finale 
 """
-def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int) -> None:
+def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, world: World) -> None:
     shuffle_execs = int(options.shuffle_execs)
     shuffle_labs = bool(options.shuffle_labs)
     shuffle_achievements = bool(options.shuffle_achvs)
@@ -26,7 +27,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int) -> N
     player_goal = int(options.player_goal)
 
     def create_event(event: str) -> HacknetItem:
-        return HacknetItem(event, player, (None, ItemClassification.progression, "Event", False), True)
+        return HacknetItem(event, player, (None, ItemClassification.progression, "Event", False, 1), True)
 
     def set_basic_rule(loc_name: str, prev_loc: str):
         """
@@ -106,14 +107,13 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int) -> N
         no_faction_access = faction_access == 3
 
         # Intro
-        for loc in multiworld.get_locations(player):
-            print(loc.name)
         set_rule(multiworld.get_location("Intro -- Maiden Flight", player),
-                 lambda state: state.has("SSHCrack", player) or
+                 lambda state: (state.has("SSHCrack", player) or
                                state.has("SMTPOverflow", player) or
                                state.has("WebServerWorm", player) or
                                (state.has("FTPBounce", player) or state.has("FTPSprint", player)) or
-                                dont_shuffle_execs
+                                dont_shuffle_execs) and
+                               (multiworld.get_location("Intro -- First Contact", player).can_reach(state))
                  )
         set_basic_rule("Intro -- Something in return", "Intro -- Maiden Flight")
         set_basic_rule("Intro -- Where to from here", "Intro -- Something in return")
@@ -156,7 +156,8 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int) -> N
 
         if shuffle_labs:
             set_rule(multiworld.get_location("Join CSEC", player),
-                     lambda state: multiworld.get_location("Labyrinths -- Altitude Loss", player).can_reach(state) and
+                     lambda state: multiworld.get_location("Labyrinths -- Altitude Loss", player).can_reach(state)
+                                   and
                                    (no_faction_access or state.has("Progressive Faction Access", player, 3)) and
                                    (dont_shuffle_execs or state.has("SQL_MemCorrupt", player))
                      )
@@ -199,12 +200,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int) -> N
         set_basic_rule("Bit -- Termination", "Bit -- Propagation")
         set_basic_rule("Stop PortHack.Heart", "Bit -- Termination")
 
-        # Determine Victory Conditions
-        if player_goal == 1:
-            multiworld.get_location("Stop PortHack.Heart", player).place_locked_item(
-                create_event("Fulfill Bit's Final Request")
-            )
-            multiworld.completion_condition[player] = lambda state: state.has("Fulfill Bit's Final Request", player)
+        visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")
 
     def set_labyrinths_mission_rules() -> None:
         # Labyrinths

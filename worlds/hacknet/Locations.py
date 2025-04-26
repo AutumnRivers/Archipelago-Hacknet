@@ -19,8 +19,13 @@ class HacknetLocData(typing.NamedTuple):
 class HacknetLocation(Location):
     game: str = "Hacknet"
 
-    def __init__(self, region):
-        self.main_region = region
+    def __init__(self, player, name, data, region):
+        self.player = player
+        self.name = name
+        self.address = data[0]
+        self.raw_region = region
+
+        self.parent_region = None
 
 mission_table = [
     HacknetLocData(starting_index, "Menu", "Intro -- First Contact", False, False),
