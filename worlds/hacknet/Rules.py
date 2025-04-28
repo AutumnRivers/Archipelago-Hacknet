@@ -146,7 +146,6 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
                          0, "FTPBounce", "SSHCrack")
         # From here on out, it's assumed the player has the base 4 executables (ftp, ssh, web, smtp)
         set_basic_rule("/el -- Head of Polar Star (Download Files)", "Naix -- Nortron Security Mainframe")
-        set_basic_rule("/el -- SecuLock Drive", "Naix -- Nortron Security Mainframe")
 
         # CSEC Intro
         set_basic_rule("CSEC -- CFC Herbs & Spices", "/el -- Head of Polar Star (Download Files)")

@@ -49,13 +49,9 @@ item_table = {
     "Tracekill": ItemData(114, ItemClassification.useful, "Executable", False),
     "ThemeChanger": ItemData(115, ItemClassification.useful, "Executable", False),
 
-    # ClockEXE is, functionally, completely and utterly useless. But it's required for the TRUE ULTIMATE POWER! achievement.
-    # So, by law of the land, it is a progression item.
-    # I'm just as angry as you. - Autumn
-    "ClockEXE": ItemData(116, ItemClassification.progression, "Executable", False, 1),
+    "ClockEXE": ItemData(116, ItemClassification.useful, "Executable", False, 1),
     "HexClock": ItemData(117, ItemClassification.filler, "Executable", False, 1),
     "HacknetEXE": ItemData(1337, ItemClassification.filler, "Executable", False, 1),
-    # "SecurityTracer": ItemData(118, ItemClassification.trap, "Executable", False, 1),
 
     "Progressive Faction Access": ItemData(119, ItemClassification.progression, "Faction", False, 3),
 
@@ -65,7 +61,6 @@ item_table = {
     "FTPSprint": ItemData(221, ItemClassification.progression, "Executable", False), # technically not a dlc item
     "Mem Suite": ItemData(120, ItemClassification.progression, "Executable", True),
     "PacificPortcrusher": ItemData(192, ItemClassification.progression, "Executable", True),
-    "Kaguya Trials Access": ItemData(193, ItemClassification.progression, "Faction", True),
 
     "ComShell": ItemData(122, ItemClassification.useful, "Executable", True, 1),
     "NetmapOrganizer": ItemData(123, ItemClassification.useful, "Executable", True, 1),
@@ -90,12 +85,18 @@ item_table = {
     "PointClicker +25pt.": ItemData(152, ItemClassification.filler, "PointClicker Point", False),
     "PointClicker +100pt.": ItemData(153, ItemClassification.filler, "PointClicker Point", False),
 
-    "PointClicker +10pt./s": ItemData(154, ItemClassification.progression_skip_balancing, "PointClicker Passive", False, 10),
-    "PointClicker +100pt./s": ItemData(155, ItemClassification.progression_skip_balancing, "PointClicker Passive", False, 5),
-    "PointClicker +1000pt./s": ItemData(156, ItemClassification.progression_skip_balancing, "PointClicker Passive", False, 5),
-    "PointClicker Passive*2": ItemData(157, ItemClassification.progression_skip_balancing, "PointClicker Passive", False, 3),
-    "PointClicker Passive*5": ItemData(158, ItemClassification.progression_skip_balancing, "PointClicker Passive", False, 3),
-    "PointClicker Passive*10": ItemData(159, ItemClassification.progression_skip_balancing, "PointClicker Passive", False, 3),
+    "PointClicker +10pt./s": ItemData(154, ItemClassification.progression_skip_balancing, "PointClicker Passive",
+                                      False, 10),
+    "PointClicker +100pt./s": ItemData(155, ItemClassification.progression_skip_balancing, "PointClicker Passive",
+                                       False, 5),
+    "PointClicker +1000pt./s": ItemData(156, ItemClassification.progression_skip_balancing, "PointClicker Passive",
+                                        False, 5),
+    "PointClicker Passive*2": ItemData(157, ItemClassification.progression_skip_balancing, "PointClicker Passive",
+                                       False, 3),
+    "PointClicker Passive*5": ItemData(158, ItemClassification.progression_skip_balancing, "PointClicker Passive",
+                                       False, 3),
+    "PointClicker Passive*10": ItemData(159, ItemClassification.progression_skip_balancing, "PointClicker Passive",
+                                        False, 3),
 
     # Traps
     "ETAS Trap": ItemData(666, ItemClassification.trap, "Trap", False),

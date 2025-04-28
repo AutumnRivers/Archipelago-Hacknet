@@ -7,7 +7,7 @@ hacknet_option_presets: Dict[str, Dict[str, Any]] = {
     "Default": {
         "player_goal": 1,
         "shuffle_labs": True,
-        "shuffle_execs": 2
+        "shuffle_execs": 1
     },
     "The Full Package": {
         "player_goal": 5,

@@ -25,7 +25,7 @@ class ExcludeJunebug(Toggle):
     If enabled, Project Junebug will not be marked as a location.
     If "Admin Access as Checks" is enabled, this will also not mark Project Junebug nodes.
     Recommended for those easily triggered by sensitive topics.
-    If enabled while Shuffle Executables is disabled, KBTPortTest will be added to Archipelago Backups from the start of the run.
+    If enabled while Shuffle Executables is disabled, KBTPortTest can be found in finale nodes.
     """
 
     display_name = "Exclude Project Junebug"
@@ -94,7 +94,6 @@ class ShufflePointClicker(Choice):
 class ShuffleExecutables(Choice):
     """
     Shuffles executables into the item pool. The player can't do ANYTHING without these, pretty much.
-    If traps are enabled, SecurityTracer will ignore this option.
     Any executable not shuffled can be found and downloaded in its vanilla location.
 
     Shuffle All: Shuffle EVERY executable. Even the useless ones.

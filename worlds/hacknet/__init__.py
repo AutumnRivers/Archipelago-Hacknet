@@ -175,7 +175,7 @@ class HacknetWorld(World):
         if not shuffle_dlc:
             _remove_labyrinths_missions()
 
-        if shuffle_pointclicker is not 3:
+        if shuffle_pointclicker != 3:
             self.hn_loc_table += pointclicker_table
         else:
             ptc_locs = [loc for loc in self._master_locations_table if loc.region == "PointClicker"]
@@ -284,10 +284,10 @@ class HacknetWorld(World):
         if faction_access < 3:
             pre_gen_item_pool += ["Progressive Faction Access" for _ in range(3)]
 
-        if shuffle_execs is 4 and shuffle_limits is 5 and not faction_access:
+        if shuffle_execs == 4 and shuffle_limits == 5 and not faction_access:
             warnings.warn("You're not shuffling executables, limits, or faction access. This will be a very short run. "
                           + "It is recommened to play with at least one of these enabled!")
-        elif shuffle_execs is 4:
+        elif shuffle_execs == 4:
             warnings.warn("You're not shuffling executables. It's recommended to play with executables shuffled!")
 
         # and that should be everything, I think...?
@@ -339,6 +339,13 @@ class HacknetWorld(World):
         hn_item = HacknetItem(name, self.player, item, False)
         if item.max_amount > -1:
             hn_item.max_amount = item.max_amount
+
+        options = self.options
+        shuffle_achievements = bool(options.shuffle_achvs)
+
+        if (shuffle_achievements and
+            (name == "ClockEXE" or name == "ThemeChanger")):
+            hn_item.classification = ItemClassification.progression
 
         if hn_item.index is not None:
             return hn_item
@@ -768,6 +775,7 @@ class HacknetWorld(World):
         shuffle_limits = int(options.enable_limits)
         sprint_replaces_bounce = bool(options.sprint_replaces_bounce)
         deathlink = bool(options.deathlink)
+        shuffle_labs = bool(options.shuffle_labs)
 
         if shuffle_ptc == 1:
             slot_data["pointclicker_mode"] = "block_upgrade_effects"
@@ -780,6 +788,6 @@ class HacknetWorld(World):
 
         slot_data["sprint_replaces_bounce"] = sprint_replaces_bounce
         slot_data["deathlink"] = deathlink
-        slot_data["enable_labyrinths"] = bool(options.shuffle_labs)
+        slot_data["enable_labyrinths"] = shuffle_labs
 
         return slot_data
