@@ -127,10 +127,17 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_partial_rule("Entropy -- X-C Project", "Entropy -- Welcome", 1)
 
         # Entropy - eOS Intro
-        set_partial_rule("Entropy -- Smash N' Grab", "Entropy -- Welcome", 1,
+        set_partial_rule("Entropy -- eOS Device Scanning", "Entropy -- Welcome", 1,
                          "eosDeviceScan")
         # This one below will implicitly check for faction access and eosDeviceScan, so it can be basic
-        set_basic_rule("Entropy -- eOS Device Scanning", "Entropy -- Smash N' Grab")
+        set_basic_rule("Entropy -- Smash N' Grab", "Entropy -- eOS Device Scanning")
+
+        forbid_items(multiworld.get_location("Entropy -- Smash N' Grab", player),
+                     {"eosDeviceScan"})
+        forbid_items(multiworld.get_location("Entropy -- eOS Device Scanning", player),
+                     {"eosDeviceScan"})
+
+
         set_rule(multiworld.get_location("Entropy -- Naix", player),
                  lambda state: (((state.has("WebServerWorm", player) or state.has("SMTPOverflow", player)) and
                                (state.has("FTPBounce", player) or state.has("FTPSprint", player))) or
@@ -199,9 +206,20 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_basic_rule("Bit -- Termination", "Bit -- Propagation")
         set_basic_rule("Stop PortHack.Heart", "Bit -- Termination")
 
+        forbid_items(multiworld.get_location("Bit -- Propagation", player), {"Tracekill", "Mission Skip",
+                                                                             "ForceHack"})
+        forbid_items(multiworld.get_location("Bit -- Termination", player), {"Tracekill", "Mission Skip",
+                                                                             "ForceHack"})
+
+        if shuffle_achievements:
+            set_achievement_rules()
+
         visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")
 
     def set_labyrinths_mission_rules() -> None:
+        if not shuffle_labs:
+            return
+
         # Labyrinths
         set_partial_rule("Labyrinths -- Kaguya Trials", "CSEC -- CFC Herbs & Spices", 2,
                          "TorrentStreamInjector")
@@ -228,6 +246,9 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         pass
 
     def set_achievement_rules():
+        set_exec_rule("Achievement -- Makeover!", "ThemeChanger")
+        set_exec_rule("Achievement -- TRUE ULTIMATE POWER!", "ClockEXE")
+
         pass
 
     def set_node_rules(): # this one is gonna be the most annoying :/

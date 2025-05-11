@@ -51,164 +51,14 @@ class HacknetWorld(World):
     _master_items_table = item_table
     _master_locations_table = mission_table + pointclicker_table + achievements_table + node_admin_table
 
-    # item_name_to_id = {name: data.code for name, data in hn_item_table.items()}
-    # location_name_to_id = {name: index for index, _region, name, _dlc, _ptc in hn_loc_table}
     item_name_to_id = {name: data.code for name, data in _master_items_table.items()}
-    location_name_to_id =  {name: index for index, _region, name, _dlc, _ptc in _master_locations_table}
+    item_id_to_name = {data.code: name for name, data in _master_items_table.items()}
 
-    def modify_item_table_by_options(self):
-        options = self.options
-        items_to_remove = {}
+    location_name_to_id = {name: index for index, _region, name, _dlc, _ptc in _master_locations_table}
+    location_id_to_name = {index: name for index, _region, name, _dlc, _ptc in _master_locations_table}
 
-        # Option values
-        shuffle_execs = int(options.shuffle_execs)
-        limits = int(options.enable_limits)
-        shuffle_pointclicker = int(options.shuffle_ptc)
-        start_with_ftpssh = bool(options.start_with_ftp_and_ssh)
-        sprint_replaces_bounce = bool(options.sprint_replaces_bounce)
-        enable_etas_traps = bool(options.enable_etas_traps)
-        shuffle_factions = bool(options.faction_access)
-
-        def add_to_removed_items(items: dict[str, ItemData]):
-            for key, value in items.items():
-                items_to_remove[key] = value.code
-
-        def _remove_execs_from_item_table():
-            execs = {key: value for key, value in self.hn_item_table.items() if value.item_type != "exec"}
-            add_to_removed_items(execs)
-
-        def _remove_items_from_item_table(classification: ItemClassification, item_type: str, *excluding):
-            # this is kind of ugly honestly. could probably make it nicer but should be fine for now
-            cond = lambda item: ((item.classification != classification and item.item_type == item_type)
-                                 or item.item_type != item_type)
-            exclude_items = {key: value for key, value in self.hn_item_table if cond(value) and key not in excluding}
-            add_to_removed_items(exclude_items)
-
-        def _remove_items_from_item_table_inverse_class(classification: ItemClassification, item_type: str,
-                                                        *excluding):
-            hn_table = self.hn_item_table
-            cond = lambda d: ((d.classification == classification and d.item_type == item_type) or
-                              d.item_type != item_type)
-            exclude_items = {key: value for key, value in hn_table if cond(value) and key not in excluding}
-            add_to_removed_items(exclude_items)
-
-        def _remove_items_by_name(*item_names):
-            cond = lambda item_name: item_name not in item_names
-            exclude_items = {key: value for key, value in self.hn_item_table.items() if cond(key)}
-            add_to_removed_items(exclude_items)
-
-        def _remove_items_by_type(*item_types):
-            cond = lambda item: item.item_type not in item_types
-            exclude_items = {key: value for key, value in self.hn_item_table.items() if cond(value)}
-            add_to_removed_items(exclude_items)
-
-        # Modify table according to options
-        # Exclude executables
-        if shuffle_execs == 4:
-            _remove_execs_from_item_table()
-        elif shuffle_execs == 3:
-            _remove_items_from_item_table_inverse_class(ItemClassification.progression, "Executable",
-                                                             "SecurityTracer")
-        elif shuffle_execs == 2:
-            _remove_items_from_item_table(ItemClassification.filler, "Executable")
-
-        if sprint_replaces_bounce:
-            _remove_items_by_name("FTPBounce")
-
-        # Exclude Limit Items
-        if limits in (2, 3):
-            _remove_items_by_name("Progressive RAM")
-        elif limits == 4:
-            _remove_items_by_name("Progressive Shell Limit")
-        elif limits == 5:
-            _remove_items_by_name("Progressive Shell Limit", "Progressive RAM")
-
-        # Exclude PointClicker
-        if shuffle_pointclicker == 3:
-            _remove_items_by_type("PointClicker Passive", "PointClicker Point", "PointClicker Trap")
-
-        if not enable_etas_traps:
-            _remove_items_by_name("ETAS Trap")
-
-        if not shuffle_factions:
-            _remove_items_by_type("Faction")
-
-        for key, _value in items_to_remove.items():
-            self.item_name_to_id.pop(key, None)
-
-    def modify_location_table_by_options(self):
-        options = self.options
-
-        # Options
-        exclude_junebug = bool(options.exclude_junebug)
-        shuffle_dlc = bool(options.shuffle_labs)
-        shuffle_pointclicker = int(options.shuffle_ptc)
-        shuffle_achievements = bool(options.shuffle_achvs)
-        shuffle_admin_access = bool(options.shuffle_nodes)
-
-        locations_to_remove = []
-
-        def _remove_junebug_mission():
-            # cond = lambda loc: loc.id is not junebug_mission_id
-            # self.hn_loc_table = [loc for loc in self.hn_loc_table if cond(loc)]
-            # self.hn_loc_table = {key: value for key, value in self.hn_loc_table if cond(value)}
-            locations_to_remove.append("CSEC -- Project Junebug")
-
-        def _remove_labyrinths_missions():
-            labs_missions = [loc for loc in self.hn_loc_table if not loc.is_dlc]
-            for mission in labs_missions:
-                locations_to_remove.append(mission.display_name)
-
-        def _remove_labyrinths_nodes(node_table: list):
-            labs_nodes = [loc for loc in node_table if loc.is_dlc]
-            for node in labs_nodes:
-                locations_to_remove.append(node.display_name)
-
-        def _remove_junebug_nodes(node_table: list):
-            jb_nodes = [loc for loc in node_table if loc.id in junebug_node_ids]
-            for node in jb_nodes:
-                locations_to_remove.append(node.display_name)
-
-        if exclude_junebug:
-            _remove_junebug_mission()
-
-        if not shuffle_dlc:
-            _remove_labyrinths_missions()
-
-        if shuffle_pointclicker != 3:
-            self.hn_loc_table += pointclicker_table
-        else:
-            ptc_locs = [loc for loc in self._master_locations_table if loc.region == "PointClicker"]
-            for loc in ptc_locs:
-                locations_to_remove.append(loc.display_name)
-
-        if shuffle_achievements:
-            self.hn_loc_table += achievements_table
-        else:
-            achv_locs = [loc for loc in self._master_locations_table if loc.display_name.startswith("Achievement --")]
-            for loc in achv_locs:
-                locations_to_remove.append(loc.display_name)
-
-        if shuffle_admin_access:
-            admin_access_table = node_admin_table
-
-            if not shuffle_dlc:
-                _remove_labyrinths_nodes(admin_access_table)
-            if exclude_junebug:
-                _remove_junebug_nodes(admin_access_table)
-
-            self.hn_loc_table += admin_access_table
-        else:
-            non_event_nodes = [loc for loc in self._master_locations_table if loc.id is not None]
-            nodes = [loc for loc in non_event_nodes if loc.id >= 133713370140]
-            for loc in nodes:
-                locations_to_remove.append(loc.display_name)
-
-        for loc_name in locations_to_remove:
-            print(f"Removing {loc_name}")
-            self.location_name_to_id.pop(loc_name, None)
-        print(f"Removed {len(locations_to_remove)} locations")
-        print(len(self.location_name_to_id.keys()))
+    exclude_locations = []
+    exclude_items = []
 
     # NOW we can generate
     def generate_early(self) -> None:
@@ -225,6 +75,8 @@ class HacknetWorld(World):
         shuffle_limits = int(options.enable_limits)
         shuffle_ptc = int(options.shuffle_ptc)
         shuffle_execs = int(options.shuffle_execs)
+        shuffle_nodes = bool(options.shuffle_nodes)
+        shuffle_achievements = bool(options.shuffle_achvs)
         start_with_basics = bool(options.start_with_ftp_and_ssh)
         sprint_replaces_bounce = bool(options.sprint_replaces_bounce)
         faction_access = int(options.faction_access)
@@ -237,9 +89,12 @@ class HacknetWorld(World):
         exclude_junebug = bool(options.exclude_junebug)
         shuffle_nodes = bool(options.shuffle_nodes)
 
-        # Modify Tables
-        self.modify_item_table_by_options()
-        self.modify_location_table_by_options()
+        if shuffle_ptc:
+            self.hn_loc_table += pointclicker_table
+        if shuffle_achievements:
+            self.hn_loc_table += achievements_table
+        if shuffle_nodes:
+            self.hn_loc_table += node_admin_table
 
         if shuffle_limits in (1, 2, 3):
             prog_shell = self.hn_item_table["Progressive Shell Limit"]
@@ -320,20 +175,23 @@ class HacknetWorld(World):
             "CSEC -- Kellis Biotech Production Asset Server"
         ]
 
+        if shuffle_limits >= 4:
+            self.exclude_items.append("Progressive Shell Limit")
+        if shuffle_limits > 4:
+            self.exclude_items.append("Progressive RAM")
+
         if exclude_junebug:
-            self.multiworld.exclude_locations[self.player].value.add(junebug_mission)
+            self.exclude_locations.append(junebug_mission)
             if shuffle_nodes:
                 for node in junebug_nodes:
-                    self.multiworld.exclude_locations[self.player].value.add(node)
-            if shuffle_execs < 4:
-                push_to_start_inv("KBTPortTest")
+                    self.exclude_locations.append(node)
 
         pass
 
-    # item_name_to_id = {name: data.code for name, data in hn_item_table.items()}
-    # location_name_to_id = {name: index for index, _region, name, _dlc, _ptc in hn_loc_table}
-
     def create_item(self, name: str) -> HacknetItem:
+        if name in self.exclude_items:
+            return None
+
         print(f"Creating item {name} for player {self.player}")
         item = self._master_items_table[name]
         hn_item = HacknetItem(name, self.player, item, False)
@@ -346,6 +204,8 @@ class HacknetWorld(World):
         if (shuffle_achievements and
             (name == "ClockEXE" or name == "ThemeChanger")):
             hn_item.classification = ItemClassification.progression
+
+        hn_item.name = name
 
         if hn_item.index is not None:
             return hn_item
@@ -379,6 +239,8 @@ class HacknetWorld(World):
 
         shuffle_labs = bool(options.shuffle_labs)
 
+        enable_etas = bool(options.enable_etas_traps)
+
         mission_skips = int(options.max_mission_skips)
         forcehacks = int(options.max_forcehacks)
 
@@ -395,6 +257,9 @@ class HacknetWorld(World):
             hn_item_pool.append(f_item)
 
         def add_to_item_pool(item_name: str) -> None:
+            if item_name in self.exclude_items:
+                return
+
             item = self.create_item(item_name)
             if item not in exclude:
                 hn_item_pool.append(item)
@@ -472,14 +337,19 @@ class HacknetWorld(World):
         def get_random_trap_name():
             trap_items = {key: value for key, value in self.hn_item_table.items() if
                           value.classification == ItemClassification.trap}
-            return random_choice(list(trap_items.keys()))
+            trap_choice = random_choice(list(trap_items.keys()))
+
+            if trap_choice == "ETAS Trap" and not enable_etas:
+                return get_random_trap_name()
+            else:
+                return trap_choice
 
         def fill_out_empty_locations():
             print(f"There are {empty_locations} empty locations. Filling them with traps...")
 
             traps = 0
             if trap_percentage > 0:
-                math.floor(empty_locations * (trap_percentage / 100))
+                traps = math.floor(empty_locations * (trap_percentage / 100))
 
             if traps > 0:
                 for _ in range(traps):
@@ -526,13 +396,21 @@ class HacknetWorld(World):
         shuffle_labs = bool(options.shuffle_labs)
         exclude_junebug = bool(options.exclude_junebug)
 
+        shuffle_ptc = int(options.shuffle_ptc) <= 2
+        shuffle_achvs = bool(options.shuffle_achvs)
+
         dont_shuffle_execs = shuffle_execs == 4
         no_faction_access = faction_access == 3
 
         def create_real_location(loc_data: HacknetLocData) -> HacknetLocation:
             return HacknetLocation(player, loc_data.display_name, loc_data, loc_data.region)
 
-        real_locations = [create_real_location(loc) for loc in filtered_locations]
+        real_locations = []
+
+        for loc in filtered_locations:
+            if loc.display_name in self.exclude_locations:
+                continue
+            real_locations.append(create_real_location(loc))
 
         def add_locs_to_region(region: Region) -> None:
             excluded_events = []
@@ -576,6 +454,14 @@ class HacknetWorld(World):
                                             state.has("FTPBounce", player) or state.has("FTPSprint", player)) and
                                            (no_faction_access or state.has("Progressive Faction Access", player, 1))
                              )
+
+        if shuffle_ptc or shuffle_achvs:
+            ptc_region = Region("PointClicker", player, self.multiworld)
+            self.multiworld.regions.append(ptc_region)
+            entropy_region.connect(ptc_region, "Finish PointClicker Mission",
+                                   lambda state:
+                                   self.multiworld.get_location("Entropy -- PointClicker (Mission)", player)
+                                   .can_reach(state))
 
         entropy_naix_region = Region("Entropy - Naix", player, self.multiworld)
         self.multiworld.regions.append(entropy_naix_region)
@@ -677,7 +563,11 @@ class HacknetWorld(World):
             labs_finale1_region = Region("Labyrinths - Take Flight", player, self.multiworld)
             self.multiworld.regions.append(labs_finale1_region)
             add_locs_to_region(labs_finale1_region)
-            labs_set4_region.connect(labs_finale1_region, "Finish Mission Set 4")
+            labs_set4_region.connect(labs_finale1_region, "Finish Mission Set 4",
+                                     lambda state: (dont_shuffle_execs or
+                                                    (state.has("SignalScramble", player) or
+                                                     state.has("Tracekill", player)))
+                                     )
 
             self.multiworld.regions.append(labs_exit_region)
             add_locs_to_region(labs_exit_region)
@@ -736,25 +626,76 @@ class HacknetWorld(World):
         self.multiworld.regions.append(finale_region)
         add_locs_to_region(finale_region)
         csec_bit_region.connect(finale_region, "Finish Bit Contract",
-                                lambda state: dont_shuffle_execs or state.has("KBTPortTest", player)
+                                lambda state: (dont_shuffle_execs or
+                                               state.has("KBTPortTest", player) and
+                                               (state.has("SignalScramble", player) or
+                                                state.has("Tracekill", player)))
                                 )
 
     def set_rules(self) -> None:
         set_rules(self.multiworld, self.options, self.player, self)
+        print(f"Test Item Name To ID: SSHCrack - {self.item_name_to_id['SSHCrack']}")
+        print(f"Test Item ID To Name: 22 - {self.item_id_to_name[22]}")
 
     def generate_basic(self) -> None:
         multiworld = self.multiworld
         player = self.player
+
+        goal = int(self.options.player_goal)
+        shuffle_labs = bool(self.options.shuffle_labs)
+
+        print(f"Player goal: {self.options.player_goal} / {goal}")
+
+        if goal >= 2 and not shuffle_labs:
+            raise Exception("You set your player goal to something that requires Labyrinths content, " +
+                            "but you are not shuffling Labyrinths content.")
 
         multiworld.get_location("Join CSEC", player).place_locked_item(
             self.create_event("CSEC Member ID")
         )
 
         # Determine Victory Conditions
-        multiworld.get_location("Stop PortHack.Heart", player).place_locked_item(
-            self.create_event("Fulfill Bit's Final Request")
-        )
-        multiworld.completion_condition[player] = lambda state: state.has("Fulfill Bit's Final Request", player)
+        if goal == 1 or goal == 5:
+            multiworld.get_location("Stop PortHack.Heart", player).place_locked_item(
+                self.create_event("Fulfill Bit's Final Request")
+            )
+        if goal == 2 or goal == 5:
+            multiworld.get_location("Watched Labyrinths Credits", player).place_locked_item(
+                self.create_event("Altitude Loss")
+            )
+        if goal == 3 or goal == 5:
+            multiworld.get_location("Broke Into The Gibson", player).place_locked_item(
+                self.create_event("Become A Veteran")
+            )
+        if goal == 4 or goal == 5:
+            multiworld.get_location("Complete Every Entropy Mission", player).place_locked_item(
+                self.create_event("Entropy VIP")
+            )
+            multiworld.get_location("Complete Every CSEC Mission", player).place_locked_item(
+                self.create_event("CSEC VIP")
+            )
+
+        match goal:
+            case 1:
+                multiworld.completion_condition[player] = lambda state: state.has("Fulfill Bit's Final Request", player)
+            case 2:
+                multiworld.completion_condition[player] = lambda state: state.has("Altitude Loss", player)
+            case 3:
+                multiworld.completion_condition[player] = lambda state: state.has("Become A Veteran", player)
+            case 4:
+                multiworld.completion_condition[player] = lambda state:(
+                    state.has("Complete Every Entropy Mission", player) and
+                    state.has("Complete Every CSEC Mission", player))
+            case 5:
+                multiworld.completion_condition[player] = lambda state: (
+                    state.has("Fulfill Bit's Final Request", player) and
+                    state.has("Altitude Loss", player) and
+                    state.has("Become A Veteran", player) and
+                    state.has("Complete Every Entropy Mission", player) and
+                    state.has("Complete Every CSEC Mission", player)
+                )
+            case _:
+                raise Exception(f"Unknown goal {self.options.player_goal}")
 
     def fill_slot_data(self) -> Mapping[str, Any]:
         slot_data: dict[str, Any] = {
@@ -765,7 +706,8 @@ class HacknetWorld(World):
             "deathlink": False,
             "randomization_seed": -1, # for future use
             "executable_grouping": 1,
-            "enable_labyrinths": True
+            "enable_labyrinths": True,
+            "enable_faction_access": False
         }
 
         options = self.options
@@ -776,6 +718,9 @@ class HacknetWorld(World):
         sprint_replaces_bounce = bool(options.sprint_replaces_bounce)
         deathlink = bool(options.deathlink)
         shuffle_labs = bool(options.shuffle_labs)
+        faction_access = int(options.faction_access)
+
+        executable_grouping = int(options.exec_grouping)
 
         if shuffle_ptc == 1:
             slot_data["pointclicker_mode"] = "block_upgrade_effects"
@@ -789,5 +734,7 @@ class HacknetWorld(World):
         slot_data["sprint_replaces_bounce"] = sprint_replaces_bounce
         slot_data["deathlink"] = deathlink
         slot_data["enable_labyrinths"] = shuffle_labs
+        slot_data["enable_faction_access"] = faction_access < 3
+        slot_data["executable_grouping"] = executable_grouping
 
         return slot_data

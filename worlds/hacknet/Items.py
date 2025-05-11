@@ -46,7 +46,7 @@ item_table = {
     "eosDeviceScan": ItemData(3659, ItemClassification.progression, "Executable", False),
 
     "OpShell": ItemData(113, ItemClassification.useful, "Executable", False),
-    "Tracekill": ItemData(114, ItemClassification.useful, "Executable", False),
+    "Tracekill": ItemData(114, ItemClassification.progression, "Executable", True), # progression bcs EnTech
     "ThemeChanger": ItemData(115, ItemClassification.useful, "Executable", False),
 
     "ClockEXE": ItemData(116, ItemClassification.useful, "Executable", False, 1),
@@ -61,6 +61,7 @@ item_table = {
     "FTPSprint": ItemData(221, ItemClassification.progression, "Executable", False), # technically not a dlc item
     "Mem Suite": ItemData(120, ItemClassification.progression, "Executable", True),
     "PacificPortcrusher": ItemData(192, ItemClassification.progression, "Executable", True),
+    "SignalScramble": ItemData(193, ItemClassification.progression, "Executable", True), # progression bcs Take Flight
 
     "ComShell": ItemData(122, ItemClassification.useful, "Executable", True, 1),
     "NetmapOrganizer": ItemData(123, ItemClassification.useful, "Executable", True, 1),

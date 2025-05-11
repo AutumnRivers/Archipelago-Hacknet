@@ -69,6 +69,8 @@ class ShuffleAdminAccess(Toggle):
     """
     Adds admin access for EVERY ACCESSIBLE NODE as a check. This adds a LOT of locations. (~140 with DLC enabled) Recommended for asyncs.
     Respects "Shuffle Labyrinths"
+
+    (Not yet implemented.)
     """
 
     display_name = "Admin Access as Checks"
@@ -80,9 +82,11 @@ class ShufflePointClicker(Choice):
     This adds ~51 location checks.
 
     Checks + Items: Every PointClicker upgrade is a check, but won't do anything when the player buys it.
-    This forces the player to rely on PointClicker Passive items being sent to them.
+    This forces the player to rely on PointClicker Passive items being sent to them.*
     Only Checks: Every PointClicker upgrade is a check, and will actually upgrade when the player buys it.
     Disabled: (Default) Don't shuffle PointClicker, at all.
+
+    * = not yet implemented
     """
 
     display_name = "Shuffle PointClicker Upgrades"
@@ -150,7 +154,7 @@ class EnableFactionAccess(Choice):
     If enabled, the player must first receive the respective Access for the faction before they can do missions for it. (Entropy, CSEC, Kaguya Trials)
     Good for asyncs!
 
-    Starting Hints: Automatically hints access for each faction from the start of the run.
+    Starting Hints: Automatically hints access for each faction from the start of the run. (doesn't work)
     """
 
     display_name = "Shuffle Faction Access"
