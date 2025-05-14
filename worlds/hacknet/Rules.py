@@ -36,6 +36,15 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_rule(multiworld.get_location(loc_name, player),
                  lambda state: multiworld.get_location(prev_loc, player).can_reach(state))
 
+    def player_can_reach_locations(state: CollectionState, locs: set[str]) -> bool:
+        can_reach: bool = True
+        for loc in locs:
+            if not can_reach:
+                break
+            real_loc = multiworld.get_location(loc, player)
+            can_reach = real_loc.can_reach(state)
+        return can_reach
+
     def set_exec_rule(loc_name: str, *execs: str):
         """
         Sets an "executable" rule - does the player have all these executables?
@@ -137,6 +146,18 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         forbid_items(multiworld.get_location("Entropy -- eOS Device Scanning", player),
                      {"eosDeviceScan"})
 
+        if player_goal in (4, 5):
+            entropy_missions = {
+                "Entropy -- PointClicker (Mission)",
+                "Entropy -- The famous counter-hack",
+                "Entropy -- Back to School",
+                "Entropy -- X-C Project",
+                "Entropy -- eOS Device Scanning",
+                "Entropy -- Smash N' Grab"
+            }
+
+            set_rule(multiworld.get_location("Complete Every Entropy Mission", player),
+                     lambda state: player_can_reach_locations(state, entropy_missions))
 
         set_rule(multiworld.get_location("Entropy -- Naix", player),
                  lambda state: (((state.has("WebServerWorm", player) or state.has("SMTPOverflow", player)) and
@@ -191,11 +212,38 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_basic_rule("CSEC -- Decrypt a secure transmission", "CSEC -- Locate or Create Decryption Software")
 
         # Junebug
-        set_exec_rule_with_loc("CSEC -- Project Junebug", "CSEC -- Locate or Create Decryption Software",
-                               "KBTPortTest")
+        if not exclude_junebug:
+            set_exec_rule_with_loc("CSEC -- Project Junebug",
+                                   "CSEC -- Locate or Create Decryption Software",
+                                   "KBTPortTest")
+
+        if player_goal in (4, 5):
+            csec_missions: set[str] = {
+                "CSEC -- Teach an old dog new tricks",
+                "CSEC -- Investigate a medical record",
+                "CSEC -- Remove a Fabricated Death Row Record",
+                "CSEC -- Check out a suspicious server",
+                "CSEC -- Wipe clean an academic record",
+                "CSEC -- Add a Death Row record for a family member",
+                "CSEC -- Compromise an eOS Device",
+                "CSEC -- Locate or Create Decryption Software",
+                "CSEC -- Help an aspiring writer",
+                "CSEC -- Decrypt a secure transmission"
+            }
+
+            if shuffle_labs:
+                csec_missions.add("CSEC -- Subvert Psylance Investigation")
+
+            if not exclude_junebug:
+                csec_missions.add("CSEC -- Project Junebug")
+
+            set_rule(multiworld.get_location("Complete Every CSEC Mission", player),
+                     lambda state: player_can_reach_locations(state, csec_missions))
 
         # CSEC -> Bit
-        set_basic_rule("CSEC -- Investigate a CSEC member's disappearance", "CSEC -- Project Junebug")
+        bit_prev_loc = "CSEC -- Project Junebug"
+        if exclude_junebug: bit_prev_loc = "CSEC -- Locate or Create Decryption Software"
+        set_basic_rule("CSEC -- Investigate a CSEC member's disappearance", bit_prev_loc)
 
         # Finale
         # NO MORE EXECUTABLES ARE REQUIRED! HALLELUIJAH
@@ -204,7 +252,9 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_basic_rule("Bit -- Investigation", "Bit -- Substantiation")
         set_basic_rule("Bit -- Propagation", "Bit -- Investigation")
         set_basic_rule("Bit -- Termination", "Bit -- Propagation")
-        set_basic_rule("Stop PortHack.Heart", "Bit -- Termination")
+
+        if player_goal in (1, 5):
+            set_basic_rule("Stop PortHack.Heart", "Bit -- Termination")
 
         forbid_items(multiworld.get_location("Bit -- Propagation", player), {"Tracekill", "Mission Skip",
                                                                              "ForceHack"})
@@ -237,13 +287,20 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_exec_rule_with_loc("Labyrinths -- Take Flight Cont.", "Labyrinths -- Take Flight",
                                "PacificPortcrusher")
         set_basic_rule("Labyrinths -- Altitude Loss", "Labyrinths -- Take Flight Cont.")
-        pass
+
+        if player_goal in (2, 5):
+            set_basic_rule("Watched Labyrinths Credits", "Labyrinths -- Altitude Loss")
+
+        if player_goal in (3, 5):
+            set_full_rule("Broke Into The Gibson", "Labyrinths -- Altitude Loss", 2,
+                          10, 10, "FTPBounce", "SSHCrack", "WebServerWorm",
+                          "SQL_MemCorrupt", "SMTPOverflow", "KBTPortTest", "TorrentStreamInjector",
+                          "PacificPortcrusher")
 
     def set_pointclicker_rules():
         # Does PointClicker even need rules...?
         if shuffle_ptc == 3:
             return
-        pass
 
     def set_achievement_rules():
         set_exec_rule("Achievement -- Makeover!", "ThemeChanger")

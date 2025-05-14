@@ -4,6 +4,7 @@ from typing import Mapping, Any
 from random import choice as random_choice
 
 from BaseClasses import Tutorial, ItemClassification, Region
+from Options import OptionError
 from worlds.AutoWorld import World, WebWorld
 
 from .Options import HacknetOptions, hn_option_groups
@@ -93,8 +94,8 @@ class HacknetWorld(World):
             self.hn_loc_table += pointclicker_table
         if shuffle_achievements:
             self.hn_loc_table += achievements_table
-        if shuffle_nodes:
-            self.hn_loc_table += node_admin_table
+        #if shuffle_nodes:
+        #    self.hn_loc_table += node_admin_table
 
         if shuffle_limits in (1, 2, 3):
             prog_shell = self.hn_item_table["Progressive Shell Limit"]
@@ -104,14 +105,12 @@ class HacknetWorld(World):
             pre_gen_item_pool += ["Progressive RAM" for _ in range(prog_ram.max_amount)]
 
         if shuffle_ptc < 3:
-            ptcp_10s = self.hn_item_table["PointClicker +10pt./s"]
             ptcp_100s = self.hn_item_table["PointClicker +100pt./s"]
             ptcp_1000s = self.hn_item_table["PointClicker +1000pt./s"]
             ptcp_m2 = self.hn_item_table["PointClicker Passive*2"]
             ptcp_m5 = self.hn_item_table["PointClicker Passive*5"]
             ptcp_m10 = self.hn_item_table["PointClicker Passive*10"]
 
-            pre_gen_item_pool += ["PointClicker +10pt./s" for _ in range(ptcp_10s.max_amount)]
             pre_gen_item_pool += ["PointClicker +100pt./s" for _ in range(ptcp_100s.max_amount)]
             pre_gen_item_pool += ["PointClicker +1000pt./s" for _ in range(ptcp_1000s.max_amount)]
             pre_gen_item_pool += ["PointClicker Passive*2" for _ in range(ptcp_m2.max_amount)]
@@ -124,10 +123,10 @@ class HacknetWorld(World):
             for exe in map(self.create_item, filtered_execs):
                 pre_gen_item_pool += [exe.name]
 
-        if sprint_replaces_bounce:
+        if sprint_replaces_bounce and shuffle_execs < 4:
             pre_gen_item_pool.pop()
 
-        if start_with_basics:
+        if start_with_basics and shuffle_execs < 4:
             pre_gen_item_pool.pop()
             pre_gen_item_pool.pop()
 
@@ -162,10 +161,10 @@ class HacknetWorld(World):
             push_to_start_inv(ftp_cracker)
 
         if faction_access == 2:
-            self.multiworld.start_hints[self.player].value.add("Progressive Faction Access")
-            self.multiworld.start_hints[self.player].value.add("Progressive Faction Access")
+            self.options.start_hints.value.add("Progressive Faction Access")
+            self.options.start_hints.value.add("Progressive Faction Access")
             if shuffle_labs:
-                self.multiworld.start_hints[self.player].value.add("Progressive Faction Access")
+                self.options.start_hints.value.add("Progressive Faction Access")
 
         junebug_mission = "CSEC -- Project Junebug"
         junebug_nodes = [
@@ -189,9 +188,6 @@ class HacknetWorld(World):
         pass
 
     def create_item(self, name: str) -> HacknetItem:
-        if name in self.exclude_items:
-            return None
-
         print(f"Creating item {name} for player {self.player}")
         item = self._master_items_table[name]
         hn_item = HacknetItem(name, self.player, item, False)
@@ -209,6 +205,8 @@ class HacknetWorld(World):
 
         if hn_item.index is not None:
             return hn_item
+        else:
+            return None
 
     def create_event(self, event: str) -> HacknetItem:
         return HacknetItem(event, self.player, (None, ItemClassification.progression, "Event", False, 1), True)
@@ -261,7 +259,9 @@ class HacknetWorld(World):
                 return
 
             item = self.create_item(item_name)
-            if item not in exclude:
+            if item.index is None:
+                return
+            elif item not in exclude:
                 hn_item_pool.append(item)
                 if item.classification == ItemClassification.progression:
                     exclude.append(item)
@@ -283,8 +283,9 @@ class HacknetWorld(World):
             if remaining_amount > 0:
                 print(remaining_amount)
                 for _ in range(remaining_amount):
-                    print(f"{remaining_amount} {item.name}")
-                    hn_item_pool.append(item)
+                    print(f"{remaining_amount} {item_name}")
+                    new_item = self.create_item(item_name)
+                    hn_item_pool.append(new_item)
 
         # First, we want to add progression items
         if shuffle_limits in (1, 2, 3):
@@ -367,21 +368,18 @@ class HacknetWorld(World):
 
             recalculate_empty_locations()
 
-            if empty_locations != 0:
-                print(f"There are still {empty_locations} empty locations. Generation failed!?")
-                raise Exception("Something went seriously, seriously wrong while filling the item pool.\n" +
-                                "After filling in empty locations, there were either " +
-                                "a) still locations with no items, or " +
-                                "b) the value was somehow negative. Either way, panic!!!")
-
         if empty_locations > 0:
             fill_out_empty_locations()
+
+        if empty_locations < 0:
+            print(f"There are still {empty_locations} empty locations. Generation failed!?")
+            raise OptionError(
+                f"There are still {empty_locations} empty locations. This is likely an issue with you.\n" +
+                "You need to add more locations, or reduce the amount of items you have.")
 
         print(f"Adding {len(hn_item_pool)} items to item pool...")
         self.multiworld.itempool += hn_item_pool
         print(f"{len(hn_item_pool)} items added successfully!")
-
-        pass # TODO
 
     def create_regions(self) -> None:
         print("Assigning regions...")
@@ -410,7 +408,16 @@ class HacknetWorld(World):
         for loc in filtered_locations:
             if loc.display_name in self.exclude_locations:
                 continue
+            if any(real_loc.name == loc.display_name for real_loc in real_locations):
+                continue
             real_locations.append(create_real_location(loc))
+
+        # Dirty fix, very dirty fix
+        # Archipelago doesn't acknowledge Junebug sometimes in the above loop
+        # So this dirty fix will force Archipelago to register Junebug, anyway
+        if not any(real_loc.name == "CSEC -- Project Junebug" for real_loc in real_locations) and not exclude_junebug:
+            junebug_data = next(loc for loc in filtered_locations if loc.display_name == "CSEC -- Project Junebug")
+            real_locations.append(create_real_location(junebug_data))
 
         def add_locs_to_region(region: Region) -> None:
             excluded_events = []
@@ -422,6 +429,8 @@ class HacknetWorld(World):
                 excluded_events.append("Complete Every Entropy Mission")
             if player_goal not in (2, 5):
                 excluded_events.append("Watched Labyrinths Credits")
+            if player_goal not in (1, 5):
+                excluded_events.append("Stop PortHack.Heart")
 
             region_locs = [loc for loc in real_locations if loc.raw_region == region.name and
                            loc.name not in excluded_events]
@@ -458,6 +467,7 @@ class HacknetWorld(World):
         if shuffle_ptc or shuffle_achvs:
             ptc_region = Region("PointClicker", player, self.multiworld)
             self.multiworld.regions.append(ptc_region)
+            add_locs_to_region(ptc_region)
             entropy_region.connect(ptc_region, "Finish PointClicker Mission",
                                    lambda state:
                                    self.multiworld.get_location("Entropy -- PointClicker (Mission)", player)
@@ -495,7 +505,7 @@ class HacknetWorld(World):
         elsec_seculock_region = Region("/el Sec - SecuLock", player, self.multiworld)
         self.multiworld.regions.append(elsec_seculock_region)
         add_locs_to_region(elsec_seculock_region)
-        elsec_polar_star_region.connect(elsec_seculock_region, "Join /el Sec")
+        elsec_polar_star_region.connect(elsec_seculock_region, "Finish Polar Star")
 
         csec_intro_region = Region("CSEC - Intro", player, self.multiworld)
         self.multiworld.regions.append(csec_intro_region)
@@ -632,12 +642,9 @@ class HacknetWorld(World):
                                                 state.has("Tracekill", player)))
                                 )
 
-    def set_rules(self) -> None:
-        set_rules(self.multiworld, self.options, self.player, self)
-        print(f"Test Item Name To ID: SSHCrack - {self.item_name_to_id['SSHCrack']}")
-        print(f"Test Item ID To Name: 22 - {self.item_id_to_name[22]}")
+        self.place_goal()
 
-    def generate_basic(self) -> None:
+    def place_goal(self):
         multiworld = self.multiworld
         player = self.player
 
@@ -647,7 +654,7 @@ class HacknetWorld(World):
         print(f"Player goal: {self.options.player_goal} / {goal}")
 
         if goal >= 2 and not shuffle_labs:
-            raise Exception("You set your player goal to something that requires Labyrinths content, " +
+            raise OptionError("You set your player goal to something that requires Labyrinths content, " +
                             "but you are not shuffling Labyrinths content.")
 
         multiworld.get_location("Join CSEC", player).place_locked_item(
@@ -684,18 +691,26 @@ class HacknetWorld(World):
                 multiworld.completion_condition[player] = lambda state: state.has("Become A Veteran", player)
             case 4:
                 multiworld.completion_condition[player] = lambda state:(
-                    state.has("Complete Every Entropy Mission", player) and
-                    state.has("Complete Every CSEC Mission", player))
+                    state.has("Entropy VIP", player) and
+                    state.has("CSEC VIP", player))
             case 5:
                 multiworld.completion_condition[player] = lambda state: (
                     state.has("Fulfill Bit's Final Request", player) and
                     state.has("Altitude Loss", player) and
                     state.has("Become A Veteran", player) and
-                    state.has("Complete Every Entropy Mission", player) and
-                    state.has("Complete Every CSEC Mission", player)
+                    state.has("Entropy VIP", player) and
+                    state.has("CSEC VIP", player)
                 )
             case _:
                 raise Exception(f"Unknown goal {self.options.player_goal}")
+
+    def set_rules(self) -> None:
+        set_rules(self.multiworld, self.options, self.player, self)
+        print(f"Test Item Name To ID: SSHCrack - {self.item_name_to_id['SSHCrack']}")
+        print(f"Test Item ID To Name: 22 - {self.item_id_to_name[22]}")
+
+    def generate_basic(self) -> None:
+        pass
 
     def fill_slot_data(self) -> Mapping[str, Any]:
         slot_data: dict[str, Any] = {

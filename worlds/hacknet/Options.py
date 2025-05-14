@@ -73,6 +73,7 @@ class ShuffleAdminAccess(Toggle):
     (Not yet implemented.)
     """
 
+    Visibility = Visibility.none
     display_name = "Admin Access as Checks"
 
 class ShufflePointClicker(Choice):
@@ -125,7 +126,7 @@ class ExecutableGrouping(Choice):
     Practicality: Executables are grouped by what they're used for. (e.g., Portcrushers, Aesthetics, etc.) Good for quick syncs.
     """
 
-    visibility = Visibility.template
+    visibility = Visibility.none
     display_name = "Executable Grouping"
     option_individually = 1
     option_regional = 2

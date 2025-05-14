@@ -86,8 +86,6 @@ item_table = {
     "PointClicker +25pt.": ItemData(152, ItemClassification.filler, "PointClicker Point", False),
     "PointClicker +100pt.": ItemData(153, ItemClassification.filler, "PointClicker Point", False),
 
-    "PointClicker +10pt./s": ItemData(154, ItemClassification.progression_skip_balancing, "PointClicker Passive",
-                                      False, 10),
     "PointClicker +100pt./s": ItemData(155, ItemClassification.progression_skip_balancing, "PointClicker Passive",
                                        False, 5),
     "PointClicker +1000pt./s": ItemData(156, ItemClassification.progression_skip_balancing, "PointClicker Passive",

@@ -96,7 +96,7 @@ mission_table = [
     HacknetLocData(61, "Labyrinths - Altitude Loss", "Labyrinths -- Altitude Loss", True, False),
     HacknetLocData(62, "Post-Labyrinths", "CSEC -- Subvert Psylance Investigation", True, False),
 
-    HacknetLocData(None, "Labyrinths", "Watched Labyrinths Credits", True, False),
+    HacknetLocData(None, "Labyrinths - Altitude Loss", "Watched Labyrinths Credits", True, False),
     HacknetLocData(None, "Post-Labyrinths", "Broke Into The Gibson", True, False)
 ]
 
@@ -161,8 +161,8 @@ achievements_table = [
     HacknetLocData(132, "CSEC", "Achievement -- Makeover!", False, False),
     HacknetLocData(133, "Entropy", "Achievement -- Join Entropy", False, False),
     HacknetLocData(134, "CSEC", "Achievement -- Join CSEC", False, False),
-    HacknetLocData(135, "/el Sec", "Achievement -- TRUE ULTIMATE POWER!", False, False),
-    HacknetLocData(136, "/el Sec", "Achievement -- Rude//el Sec Champion", False, False),
+    HacknetLocData(135, "/el Sec - Polar Star", "Achievement -- TRUE ULTIMATE POWER!", False, False),
+    HacknetLocData(136, "/el Sec - Polar Star", "Achievement -- Rude//el Sec Champion", False, False),
     HacknetLocData(137, "PointClicker", "Achievement -- PointClicker", False, False),
     HacknetLocData(138, "PointClicker", "Achievement -- You better not have clicked for those...",
                    False, False)
@@ -299,7 +299,6 @@ node_admin_table = [
     HacknetLocData(262, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_Network_Hub", True),
     HacknetLocData(263, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_Whitelist_Authenticator",
                    True),
-    HacknetLocData(264, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_Network_Hub", True),
     HacknetLocData(265, "Labyrinths - Take Flight", "Labyrinths -- Faith Morello's Laptop", True),
     HacknetLocData(266, "Labyrinths - Take Flight", "Labyrinths -- Vito McMichael's Laptop", True),
     HacknetLocData(267, "Labyrinths - Take Flight", "Labyrinths -- Mark Robertson's Office Computer",
