@@ -171,11 +171,12 @@ achievements_table = [
 node_admin_table = [
     # oh boy here we go
     HacknetLocData(140, "Menu", "Intro -- Player's PC", False), # basically a freebie, fires after tutorial is finished
-    HacknetLocData(157, "Menu", "Intro -- Archipelago Backups", False),
+    HacknetLocData(157, "Menu", "Intro -- Archipelago IRC", False),
     HacknetLocData(141, "Intro", "Intro -- Bitwise Test PC", False),
     HacknetLocData(142, "Intro", "Intro -- P. Anderson's Bedroom PC", False),
     HacknetLocData(143, "Intro", "Intro -- Entropy test Server", False),
     HacknetLocData(144, "Intro", "Intro -- Viper-Battlestation", False),
+    HacknetLocData(284, "Intro", "Intro -- Entropy Asset cache", False), # Not a typo, it's like that in-game
 
     # Entropy
     HacknetLocData(145, "Entropy", "Entropy -- Slash-Bot News Network", False),
