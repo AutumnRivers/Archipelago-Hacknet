@@ -30,7 +30,7 @@ class ExcludeJunebug(Toggle):
 
     display_name = "Exclude Project Junebug"
 
-class EnableLabyrinths(Toggle):
+class EnableLabyrinths(DefaultOnToggle):
     """
     Whether or not to shuffle Labyrinths content (missions, executables, etc.)
     If player goal is set to Altitude Loss, Veteran, or Completionist, generation will throw an error if this is disabled.
@@ -83,11 +83,9 @@ class ShufflePointClicker(Choice):
     This adds ~51 location checks.
 
     Checks + Items: Every PointClicker upgrade is a check, but won't do anything when the player buys it.
-    This forces the player to rely on PointClicker Passive items being sent to them.*
+    This forces the player to rely on PointClicker Passive items being sent to them.
     Only Checks: Every PointClicker upgrade is a check, and will actually upgrade when the player buys it.
     Disabled: (Default) Don't shuffle PointClicker, at all.
-
-    * = not yet implemented
     """
 
     display_name = "Shuffle PointClicker Upgrades"
@@ -125,8 +123,6 @@ class ExecutableGrouping(Choice):
     Regional: Executables are grouped by region. (e.g., "Labyrinths Executables" is TorrentStreamInjector, SSLTrojan, etc.)
     Practicality: Executables are grouped by what they're used for. (e.g., Portcrushers, Aesthetics, etc.) Good for quick syncs.
     """
-
-    visibility = Visibility.none
     display_name = "Executable Grouping"
     option_individually = 1
     option_regional = 2
@@ -155,7 +151,7 @@ class EnableFactionAccess(Choice):
     If enabled, the player must first receive the respective Access for the faction before they can do missions for it. (Entropy, CSEC, Kaguya Trials)
     Good for asyncs!
 
-    Starting Hints: Automatically hints access for each faction from the start of the run. (doesn't work)
+    Starting Hints: Automatically hints access for each faction from the start of the run.
     """
 
     display_name = "Shuffle Faction Access"
@@ -184,8 +180,8 @@ class ShuffleETASTrap(Toggle):
 
 class DeathLink(Toggle):
     """
-    If enabled: whenever you are traced back, you abandon a mission, or your in-game computer crashes, a deathlink is sent.
-    DeathLinks are not sent for the crash caused by Striker. (But they are for Naix! :3c)
+    If enabled: whenever you are traced back or your in-game computer crashes, a deathlink is sent.
+    DeathLinks are not sent for the crash caused by Striker. (But they are for Naix)
 
     A DeathLink in Hacknet will crash the player's (in-game) computer. If an ETAS is currently active, then the DeathLink is discarded.
     """

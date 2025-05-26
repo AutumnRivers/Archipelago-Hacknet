@@ -107,15 +107,15 @@ class HacknetWorld(World):
         if shuffle_ptc < 3:
             ptcp_100s = self.hn_item_table["PointClicker +100pt./s"]
             ptcp_1000s = self.hn_item_table["PointClicker +1000pt./s"]
-            ptcp_m2 = self.hn_item_table["PointClicker Passive*2"]
-            ptcp_m5 = self.hn_item_table["PointClicker Passive*5"]
-            ptcp_m10 = self.hn_item_table["PointClicker Passive*10"]
+            ptcp_m2 = self.hn_item_table["PointClicker Passive*10"]
+            ptcp_m5 = self.hn_item_table["PointClicker Passive*100"]
+            ptcp_m10 = self.hn_item_table["PointClicker Passive*1000"]
 
             pre_gen_item_pool += ["PointClicker +100pt./s" for _ in range(ptcp_100s.max_amount)]
             pre_gen_item_pool += ["PointClicker +1000pt./s" for _ in range(ptcp_1000s.max_amount)]
-            pre_gen_item_pool += ["PointClicker Passive*2" for _ in range(ptcp_m2.max_amount)]
-            pre_gen_item_pool += ["PointClicker Passive*5" for _ in range(ptcp_m5.max_amount)]
-            pre_gen_item_pool += ["PointClicker Passive*10" for _ in range(ptcp_m10.max_amount)]
+            pre_gen_item_pool += ["PointClicker Passive*10" for _ in range(ptcp_m2.max_amount)]
+            pre_gen_item_pool += ["PointClicker Passive*100" for _ in range(ptcp_m5.max_amount)]
+            pre_gen_item_pool += ["PointClicker Passive*1000" for _ in range(ptcp_m10.max_amount)]
 
         if shuffle_execs < 4:
             filtered_execs = {key: value for key, value in self.hn_item_table.items() if value.item_type == "Executable"
@@ -159,6 +159,9 @@ class HacknetWorld(World):
             push_to_start_inv("SSHCrack")
             ftp_cracker = "FTPSprint" if sprint_replaces_bounce else "FTPBounce"
             push_to_start_inv(ftp_cracker)
+
+        if sprint_replaces_bounce and shuffle_execs < 4:
+            self.exclude_items.append("FTPBounce")
 
         if faction_access == 2:
             self.options.start_hints.value.add("Progressive Faction Access")

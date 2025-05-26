@@ -1,6 +1,7 @@
 import typing
 
-from BaseClasses import Item, ItemClassification
+from BaseClasses import Item, ItemClassification, CollectionState
+
 
 class ItemData(typing.NamedTuple):
     code: typing.Optional[int]
@@ -81,21 +82,17 @@ item_table = {
     "Random IRC Log": ItemData(143, ItemClassification.filler, "Junk", False),
     
     # PointClicker Filler
-    "PointClicker +1pt.": ItemData(150, ItemClassification.filler, "PointClicker Point", False),
-    "PointClicker +5pt.": ItemData(151, ItemClassification.filler, "PointClicker Point", False),
-    "PointClicker +25pt.": ItemData(152, ItemClassification.filler, "PointClicker Point", False),
-    "PointClicker +100pt.": ItemData(153, ItemClassification.filler, "PointClicker Point", False),
+    "PointClicker +50pt.": ItemData(151, ItemClassification.filler, "PointClicker Point", False),
+    "PointClicker +500pt.": ItemData(152, ItemClassification.filler, "PointClicker Point", False),
+    "PointClicker +5000pt.": ItemData(153, ItemClassification.filler, "PointClicker Point", False),
 
     "PointClicker +100pt./s": ItemData(155, ItemClassification.progression_skip_balancing, "PointClicker Passive",
                                        False, 5),
     "PointClicker +1000pt./s": ItemData(156, ItemClassification.progression_skip_balancing, "PointClicker Passive",
                                         False, 5),
-    "PointClicker Passive*2": ItemData(157, ItemClassification.progression_skip_balancing, "PointClicker Passive",
-                                       False, 3),
-    "PointClicker Passive*5": ItemData(158, ItemClassification.progression_skip_balancing, "PointClicker Passive",
-                                       False, 3),
-    "PointClicker Passive*10": ItemData(159, ItemClassification.progression_skip_balancing, "PointClicker Passive",
-                                        False, 3),
+    "PointClicker Passive*10": ItemData(157, ItemClassification.progression, "PointClicker Passive", False, 3),
+    "PointClicker Passive*100": ItemData(158, ItemClassification.progression, "PointClicker Passive", False, 3),
+    "PointClicker Passive*1000": ItemData(159, ItemClassification.progression, "PointClicker Passive", False, 3),
 
     # Traps
     "ETAS Trap": ItemData(666, ItemClassification.trap, "Trap", False),
@@ -131,3 +128,33 @@ item_table = {
     # "Corrupted PM Firmware": ItemData(2000, ItemClassification.progression, "MacGuffin", False),
     # "Database Password Reset": ItemData(2001, ItemClassification.progression, "MacGuffin", True),
 }
+
+regional_exec_packs = {
+    "Intro Executable Pack": { "FTPBounce", "SSHCrack" },
+    "Entropy Executable Pack": { "SMTPOverflow", "SQL_MemCorrupt", "WebServerWorm", "eosDeviceScan", "ClockEXE" },
+    "CSEC Executable Pack": { "KBTPortTest", "ThemeChanger", "DEC Suite" },
+    "Labyrinths Executable Pack": { "TorrentStreamInjector", "SSLTrojan", "FTPSprint", "Mem Suite",
+                                    "PacificPortcrusher", "ComShell", "NetmapOrganizer", "SignalScramble" },
+    "Finale Executable Pack": { "Tracekill", "OpShell" }
+}
+
+practical_exec_packs = {
+    "Portcrusher Pack": { "FTPBounce", "SSHCrack", "SMTPOverflow", "SQL_MemCorrupt", "WebServerWorm", "eosDeviceScan",
+                          "KBTPortTest", "Tracekill", "ThemeChanger", "DEC Suite" },
+    "Labyrinths Portcrusher Pack": { "TorrentStreamInjector", "SSLTrojan", "FTPSprint", "PacificPortcrusher",
+                                     "SignalScramble", "Mem Suite" },
+    "Clock Pack": { "ClockEXE", "HexClock", "ClockV2" },
+    "Misc. Executables Pack": { "OpShell", "ComShell", "NetmapOrganizer", "DNotes", "Tuneswap" }
+}
+
+def exec_is_in_pack(exec_name: str, is_regional: bool) -> str:
+    if is_regional and any(exec_name in pack for pack in regional_exec_packs.values()):
+        for pack_name, executables in regional_exec_packs.items():
+            if exec_name in executables:
+                return pack_name
+    elif not is_regional and any(exec_name in pack for pack in practical_exec_packs.values()):
+        for pack_name, executables in practical_exec_packs.items():
+            if exec_name in executables:
+                return pack_name
+    else:
+        raise Exception(f"Invalid Executable Name ({exec_name})")
