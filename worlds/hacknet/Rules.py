@@ -5,141 +5,9 @@ from worlds.generic.Rules import set_rule, forbid_items
 from worlds.AutoWorld import World
 
 from .Options import HacknetOptions
-from .Items import HacknetItem, exec_is_in_pack
 
+from .RuleSetter import HacknetRuleSetter
 from .AdminAccessRules import set_node_rules
-
-class HacknetRuleSetter:
-    def __init__(self, multiworld: MultiWorld,
-                 options: HacknetOptions,
-                 player: int):
-        self.multiworld = multiworld
-        self.options = options
-        self.player = player
-        self.shuffle_execs = int(options.shuffle_execs)
-        self.shuffle_labs = bool(options.shuffle_labs)
-        self.shuffle_achievements = bool(options.shuffle_achvs)
-        self.shuffle_nodes = bool(options.shuffle_nodes)
-        self.shuffle_ptc = int(options.shuffle_ptc)
-        self.shuffle_limits = int(options.enable_limits)
-        self.exclude_junebug = bool(options.exclude_junebug)
-        self.faction_access = int(options.faction_access)
-        self.player_goal = int(options.player_goal)
-        self.sprint_replaces_bounce = bool(options.sprint_replaces_bounce)
-        self.exec_grouping = int(options.exec_grouping)
-
-        self.exec_packs_added: set[str] = set()
-
-    def set_basic_rule(self, loc_name: str, prev_loc: str):
-        """
-        Sets a "basic" rule - basically, can the player reach this previous location?
-        """
-        set_rule(self.multiworld.get_location(loc_name, self.player),
-                 lambda state: self.multiworld.get_location(prev_loc, self.player).can_reach(state))
-
-    def player_can_reach_locations(self, state: CollectionState, locs: set[str]) -> bool:
-        can_reach: bool = True
-        for loc in locs:
-            if not can_reach:
-                break
-            real_loc = self.multiworld.get_location(loc, self.player)
-            can_reach = real_loc.can_reach(state)
-        return can_reach
-
-    def set_exec_rule(self, loc_name: str, *execs: str):
-        """
-        Sets an "executable" rule - does the player have all these executables?
-        """
-        if self.shuffle_execs == 4 or len(execs) == 0:
-            return
-        for exec_name in execs:
-            real_name = exec_name
-            if exec_name == "FTPBounce" and self.sprint_replaces_bounce:
-                real_name = "FTPSprint"
-
-            if exec_name == "FTPBounce" and self.exec_grouping == 1:
-                set_rule(self.multiworld.get_location(loc_name, self.player),
-                         lambda state: state.has("FTPBounce") or state.has("FTPSprint"))
-            elif self.exec_grouping == 1:
-                set_rule(self.multiworld.get_location(loc_name, self.player),
-                         lambda state: state.has(real_name, self.player))
-            elif self.exec_grouping in (2, 3):
-                exec_pack = exec_is_in_pack(exec_name, self.exec_grouping == 2)
-                if exec_pack in self.exec_packs_added:
-                    continue
-                set_rule(self.multiworld.get_location(loc_name, self.player),
-                         lambda state: state.has(exec_pack, self.player))
-                self.exec_packs_added.add(exec_pack)
-
-    def set_faction_access_rule(self, loc_name: str, amount_needed: int):
-        """
-        Does what it says on the tin. Self-explanatory.
-        1 - Entropy
-        2 - Kaguya Trials
-        3 - CSEC
-        """
-        if self.faction_access == 3:
-            return
-        set_rule(self.multiworld.get_location(loc_name, self.player),
-                 lambda state: state.has("Progressive Faction Access", self.player, amount_needed))
-
-    def set_limits_rule(self, loc_name: str, shells_needed: int, ram_upgrades_needed: int):
-        """
-        This is only used for finale nodes, really.
-        Altitude Loss and EnTech Backups logically require ~5 shells and maximum RAM.
-        Gibson logically requires maximum shells and maximum RAM.
-        """
-        if self.shuffle_limits == 5:
-            return
-
-        has_shell_limits = self.shuffle_limits in (1, 2, 3)
-        has_ram_limits = self.shuffle_limits in (1, 4)
-
-        set_rule(self.multiworld.get_location(loc_name, self.player),
-                 lambda state: (not has_shell_limits or
-                                state.has("Progressive Shell Limit", self.player, shells_needed)) and
-                               (not has_ram_limits or state.has("Progressive RAM", self.player, ram_upgrades_needed))
-                 )
-
-    def set_exec_rule_with_loc(self, loc_name: str, prev_loc: str, *execs: str):
-        self.set_basic_rule(loc_name, prev_loc)
-        self.set_exec_rule(loc_name, *execs)
-
-    def set_partial_rule(self, loc_name: str, prev_loc: str, faction_access_needed: int,
-                         *execs: str):
-        """
-        Same thing as below, but without limit requirements. For early nodes.
-        """
-        self.set_basic_rule(loc_name, prev_loc)
-        self.set_exec_rule(loc_name, *execs)
-        self.set_faction_access_rule(loc_name, faction_access_needed)
-
-    def set_full_rule(self, loc_name: str, prev_loc: str, faction_access_needed: int,
-                      shells_needed: int, ram_upgrades_needed: int, *execs: str):
-        """
-        The amalgamation of everything above. The full package. Oh, yeah, baby.
-        """
-        self.set_basic_rule(loc_name, prev_loc)
-        self.set_exec_rule(loc_name, *execs)
-        self.set_faction_access_rule(loc_name, faction_access_needed)
-        self.set_limits_rule(loc_name, shells_needed, ram_upgrades_needed)
-
-    def has_amount_of_req_execs(self, state: CollectionState, amount_required: int,
-                                *execs: str) -> bool:
-        meets_requirement: bool = False
-        has_amount: int = 0
-        for exec_name in execs:
-            if has_amount >= amount_required:
-                meets_requirement = True
-                break
-            if exec_name == "FTPBounce":
-                has_ftp_cracker = state.has("FTPBounce", self.player) or state.has("FTPSprint", self.player)
-                if has_ftp_cracker:
-                    has_amount += 1
-                continue
-            if state.has(exec_name, self.player):
-                has_amount += 1
-        return meets_requirement
 
 """
 [------- LAY OF THE LAND (RULES) -------]
@@ -155,12 +23,8 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
     shuffle_achievements = bool(options.shuffle_achvs)
     shuffle_nodes = bool(options.shuffle_nodes)
     shuffle_ptc = int(options.shuffle_ptc)
-    shuffle_limits = int(options.enable_limits)
     exclude_junebug = bool(options.exclude_junebug)
-    faction_access = int(options.faction_access)
     player_goal = int(options.player_goal)
-    sprint_replaces_bounce = bool(options.sprint_replaces_bounce)
-    exec_grouping = int(options.exec_grouping)
 
     rule_setter = HacknetRuleSetter(multiworld, options, player)
 
@@ -168,24 +32,20 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         dont_shuffle_execs = shuffle_execs == 5
 
         # Intro
-        set_rule(multiworld.get_location("Intro -- Maiden Flight", player),
-                 lambda state: (state.has("SSHCrack", player) or
-                               state.has("SMTPOverflow", player) or
-                               state.has("WebServerWorm", player) or
-                               (state.has("FTPBounce", player) or state.has("FTPSprint", player)) or
-                                dont_shuffle_execs) and
-                               (multiworld.get_location("Intro -- First Contact", player).can_reach(state))
-                 )
+        rule_setter.set_basic_rule("Intro -- Maiden Flight", "Intro -- Getting some tools together")
         rule_setter.set_basic_rule("Intro -- Something in return", "Intro -- Maiden Flight")
         rule_setter.set_basic_rule("Intro -- Where to from here", "Intro -- Something in return")
+        rule_setter.set_limits_rule("Intro -- Where to from here", 1, 0)
         rule_setter.set_basic_rule("Entropy -- Confirmation Mission", "Intro -- Where to from here")
         rule_setter.set_basic_rule("Entropy -- Welcome", "Entropy -- Confirmation Mission")
+        rule_setter.set_limits_rule("Entropy -- Welcome", 1, 2)
 
         # Entropy Sets
         rule_setter.set_partial_rule("Entropy -- PointClicker (Mission)", "Entropy -- Welcome", 1,
                          "FTPBounce", "SSHCrack")
         rule_setter.set_partial_rule("Entropy -- The famous counter-hack", "Entropy -- Welcome", 1,
                          "FTPBounce", "SSHCrack")
+        rule_setter.set_limits_rule("Entropy -- The famous counter-hack", 2, 2)
         rule_setter.set_partial_rule("Entropy -- Back to School", "Entropy -- Welcome", 1,
                          "FTPBounce", "SSHCrack")
         rule_setter.set_partial_rule("Entropy -- X-C Project", "Entropy -- Welcome", 1,
@@ -215,14 +75,8 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
             set_rule(multiworld.get_location("Complete Every Entropy Mission", player),
                      lambda state: rule_setter.player_can_reach_locations(state, entropy_missions))
 
-        set_rule(multiworld.get_location("Entropy -- Naix", player),
-                 lambda state: ((
-                                       (state.has("FTPBounce", player) or state.has("FTPSprint", player)) and
-                                       (state.has("WebServerWorm", player) and state.has("SMTPOverflow", player))
-                               ) or
-                               dont_shuffle_execs) and
-                               multiworld.get_location("Entropy -- Smash N' Grab", player).can_reach(state)
-                 )
+        rule_setter.set_partial_rule("Entropy -- Naix", "Entropy -- Smash N' Grab", 1, "FTPBounce",
+                                     "WebServerWorm", "SMTPOverflow")
 
         # /el Sec
         # IIRC, only Polar Star needs to be completed in /el...
@@ -304,6 +158,9 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         rule_setter.set_basic_rule("Bit -- Investigation", "Bit -- Substantiation")
         rule_setter.set_basic_rule("Bit -- Propagation", "Bit -- Investigation")
         rule_setter.set_basic_rule("Bit -- Termination", "Bit -- Propagation")
+        rule_setter.set_full_rule("Bit -- Termination", "Bit -- Propagation", 3,
+                                  5, 10, "FTPBounce", "SSHCrack", "WebServerWorm",
+                                  "SQL_MemCorrupt", "KBTPortTest", "SMTPOverflow")
 
         if player_goal in (1, 5):
             rule_setter.set_basic_rule("Stop PortHack.Heart", "Bit -- Termination")
@@ -311,9 +168,9 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         forbid_items(multiworld.get_location("Bit -- Propagation", player), {"Tracekill", "Mission Skip",
                                                                              "ForceHack"})
         forbid_items(multiworld.get_location("Bit -- Termination", player), {"Tracekill", "Mission Skip",
-                                                                             "ForceHack"})
-
-        visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")
+                                                                             "ForceHack",
+                                                                             "Progressive Shell Limit",
+                                                                             "Progressive RAM"})
 
     def set_labyrinths_mission_rules() -> None:
         if not shuffle_labs:
@@ -333,6 +190,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         rule_setter.set_basic_rule("Labyrinths -- Neopals", "Labyrinths -- Cleanup/It Follows")
         rule_setter.set_basic_rule("Labyrinths -- Bean Stalk/Expo Grave/The Keyboard Life", "Labyrinths -- Neopals")
         rule_setter.set_basic_rule("Labyrinths -- Take Flight", "Labyrinths -- Bean Stalk/Expo Grave/The Keyboard Life")
+        rule_setter.set_limits_rule("Labyrinths -- Take Flight", 6, 6)
         rule_setter.set_exec_rule_with_loc("Labyrinths -- Take Flight Cont.", "Labyrinths -- Take Flight",
                                "PacificPortcrusher")
         rule_setter.set_basic_rule("Labyrinths -- Altitude Loss", "Labyrinths -- Take Flight Cont.")
@@ -342,7 +200,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
 
         if player_goal in (3, 5):
             rule_setter.set_full_rule("Broke Into The Gibson", "Labyrinths -- Altitude Loss", 2,
-                          10, 10, "FTPBounce", "SSHCrack", "WebServerWorm",
+                          10, 10, "FTPSprint", "SSHCrack", "WebServerWorm",
                           "SQL_MemCorrupt", "SMTPOverflow", "KBTPortTest", "TorrentStreamInjector",
                           "PacificPortcrusher")
 
@@ -370,7 +228,9 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         return best_combo  # (1000s, 100s, 10s)
 
     def set_pointclicker_rule(loc_name: str, target_rate: int, target_score: int) -> None:
-        tens_needed, hundreds_needed, thousands_needed = decompose_number(target_rate)
+        if shuffle_ptc > 1:
+            return
+        thousands_needed, hundreds_needed, tens_needed = decompose_number(target_rate)
 
         static_hundreds = target_score % 1000
         if static_hundreds > 5:
@@ -385,11 +245,11 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
             static_thousands = 0
 
         set_rule(multiworld.get_location(loc_name, player),
-                 lambda state: (state.has("PointClicker Passive*10", tens_needed)) and
-                               (state.has("PointClicker Passive*100", hundreds_needed)) and
-                               (state.has("PointClicker Passive*1000", thousands_needed)) and
-                               (state.has("PointClicker +100pt./s", static_hundreds)) and
-                               (state.has("PointClicker +1000pt./s", static_thousands)))
+                 lambda state: (state.has("PointClicker Passive*10", player, tens_needed)) and
+                               (state.has("PointClicker Passive*100", player, hundreds_needed)) and
+                               (state.has("PointClicker Passive*1000", player, thousands_needed)) and
+                               (state.has("PointClicker +100pt./s", player, static_hundreds)) and
+                               (state.has("PointClicker +1000pt./s", player, static_thousands)))
 
     def set_pointclicker_rules():
         # Does PointClicker even need rules...?
@@ -398,7 +258,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
 
         rule_setter.set_basic_rule("PointClicker -- Click Me!", "Entropy -- PointClicker (Mission)")
         rule_setter.set_basic_rule("PointClicker -- Autoclicker v1", "PointClicker -- Click Me!")
-        rule_setter.set_basic_rule("PointClicker -- Autoclicker v2", "PointClicker -- AutoClicker v1")
+        rule_setter.set_basic_rule("PointClicker -- Autoclicker v2", "PointClicker -- Autoclicker v1")
         rule_setter.set_basic_rule("PointClicker -- Pointereiellion", "PointClicker -- Autoclicker v2")
         rule_setter.set_basic_rule("PointClicker -- Upgrade 4", "PointClicker -- Pointereiellion")
 
@@ -424,8 +284,11 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         rule_setter.set_basic_rule("Achievement -- Join CSEC", "Join CSEC")
         rule_setter.set_basic_rule("Achievement -- Rude//el Sec Champion", "/el -- Head of Polar Star (Download Files)")
         rule_setter.set_basic_rule("Achievement -- PointClicker", "Entropy -- PointClicker (Mission)")
+        set_pointclicker_rule("Achievement -- PointClicker", 10, 1)
         rule_setter.set_basic_rule("Achievement -- You better not have clicked for those...",
                                    "Entropy -- PointClicker (Mission)")
+        set_pointclicker_rule("Achievement -- You better not have clicked for those...",
+                              3330, 500000)
         pass
 
     set_mission_rules()
@@ -434,3 +297,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_pointclicker_rules()
     if shuffle_achievements:
         set_achievement_rules()
+    if shuffle_nodes:
+        set_node_rules(rule_setter)
+
+    visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")

@@ -31,7 +31,7 @@ mission_table = [
     HacknetLocData(1, "Intro", "Intro -- Maiden Flight", False, False),
     HacknetLocData(2, "Intro", "Intro -- Something in return", False, False),
     HacknetLocData(3, "Intro", "Intro -- Where to from here", False, False),
-    HacknetLocData(4, "Intro", "Intro -- Getting some tools together", False, False),
+    HacknetLocData(4, "Menu", "Intro -- Getting some tools together", False, False),
     HacknetLocData(5, "Intro", "Entropy -- Confirmation Mission", False, False),
     HacknetLocData(6, "Intro", "Entropy -- Welcome", False, False),
 
@@ -163,8 +163,8 @@ achievements_table = [
     HacknetLocData(134, "CSEC", "Achievement -- Join CSEC", False, False),
     HacknetLocData(135, "/el Sec - Polar Star", "Achievement -- TRUE ULTIMATE POWER!", False, False),
     HacknetLocData(136, "/el Sec - Polar Star", "Achievement -- Rude//el Sec Champion", False, False),
-    HacknetLocData(137, "PointClicker", "Achievement -- PointClicker", False, False),
-    HacknetLocData(138, "PointClicker", "Achievement -- You better not have clicked for those...",
+    HacknetLocData(137, "Entropy", "Achievement -- PointClicker", False, False),
+    HacknetLocData(138, "Entropy", "Achievement -- You better not have clicked for those...",
                    False, False)
 ]
 
@@ -174,16 +174,16 @@ node_admin_table = [
     HacknetLocData(157, "Menu", "Intro -- Archipelago IRC", False),
     HacknetLocData(141, "Intro", "Intro -- Bitwise Test PC", False),
     HacknetLocData(142, "Intro", "Intro -- P. Anderson's Bedroom PC", False),
-    HacknetLocData(143, "Intro", "Intro -- Entropy test Server", False),
+    HacknetLocData(143, "Intro", "Intro -- Entropy test Server", False), # Not a typo
     HacknetLocData(144, "Intro", "Intro -- Viper-Battlestation", False),
-    HacknetLocData(284, "Intro", "Intro -- Entropy Asset cache", False), # Not a typo, it's like that in-game
+    HacknetLocData(284, "Intro", "Intro -- Entropy Asset Cache", False),
+    HacknetLocData(145, "Intro", "Entropy -- Slash-Bot News Network", False),
 
     # Entropy
-    HacknetLocData(145, "Entropy", "Entropy -- Slash-Bot News Network", False),
     HacknetLocData(146, "Entropy", "Entropy -- Entropy Asset Server", False),
     HacknetLocData(147, "Entropy", "Entropy -- Milburg High IT Office", False),
     HacknetLocData(148, "Entropy", "Entropy -- PointClicker (Admin Access)", False),
-    HacknetLocData(149, "Entropy", "Entropy -- PP Marketing Inc.", False), # hehe pp
+    HacknetLocData(149, "Entropy", "Entropy -- PP Marketing Inc.", False),
     HacknetLocData(150, "Entropy", "Entropy -- X-C Project Tablet#001//RESEARCH", False),
     HacknetLocData(151, "Entropy", "Entropy -- Jason's PowerBook Plus", False),
     HacknetLocData(152, "Entropy", "Entropy -- JDel Home PC", False),

@@ -3,12 +3,12 @@ import math
 from typing import Mapping, Any
 from random import choice as random_choice
 
-from BaseClasses import Tutorial, ItemClassification, Region
+from BaseClasses import Tutorial, ItemClassification, Region, CollectionState
 from Options import OptionError
 from worlds.AutoWorld import World, WebWorld
 
 from .Options import HacknetOptions, hn_option_groups
-from .Items import item_table, ItemData, HacknetItem
+from .Items import item_table, ItemData, HacknetItem, exec_is_in_pack
 from .Locations import achievements_table, node_admin_table, mission_table, pointclicker_table, junebug_mission_id, \
     junebug_node_ids, HacknetLocData, HacknetLocation
 from .Rules import set_rules
@@ -76,6 +76,7 @@ class HacknetWorld(World):
         shuffle_limits = int(options.enable_limits)
         shuffle_ptc = int(options.shuffle_ptc)
         shuffle_execs = int(options.shuffle_execs)
+        exec_grouping = int(options.exec_grouping)
         shuffle_nodes = bool(options.shuffle_nodes)
         shuffle_achievements = bool(options.shuffle_achvs)
         start_with_basics = bool(options.start_with_ftp_and_ssh)
@@ -117,11 +118,18 @@ class HacknetWorld(World):
             pre_gen_item_pool += ["PointClicker Passive*100" for _ in range(ptcp_m5.max_amount)]
             pre_gen_item_pool += ["PointClicker Passive*1000" for _ in range(ptcp_m10.max_amount)]
 
-        if shuffle_execs < 4:
+        if shuffle_execs < 4 and exec_grouping < 3:
             filtered_execs = {key: value for key, value in self.hn_item_table.items() if value.item_type == "Executable"
                               and value.classification != ItemClassification.trap}
             for exe in map(self.create_item, filtered_execs):
                 pre_gen_item_pool += [exe.name]
+        elif shuffle_execs < 4:
+            filtered_packs = {key: value for key, value in self.hn_item_table.items() if
+                              value.item_type == "Executable Region" or value.item_type == "Executable Pack" or
+                              value.item_type == "Executable" and value.classification != ItemClassification.trap}
+
+            for pack in map(self.create_item, filtered_packs):
+                pre_gen_item_pool += [pack.name]
 
         if sprint_replaces_bounce and shuffle_execs < 4:
             pre_gen_item_pool.pop()
@@ -245,6 +253,8 @@ class HacknetWorld(World):
         mission_skips = int(options.max_mission_skips)
         forcehacks = int(options.max_forcehacks)
 
+        exec_grouping = int(options.exec_grouping)
+
         def add_random_filler_item() -> None:
             filler_item = get_random_filler_item()
             is_exec = filler_item[1].item_type == "Executable"
@@ -290,6 +300,29 @@ class HacknetWorld(World):
                     new_item = self.create_item(item_name)
                     hn_item_pool.append(new_item)
 
+        def add_executables_to_item_pool() -> None:
+            if shuffle_execs == 4:
+                return
+
+            is_grouping: bool = exec_grouping > 1
+
+            if not is_grouping:
+                execs_to_add = {key: value for key, value in filtered_items.items() if value.item_type == "Executable"}
+
+                for exec_name in execs_to_add:
+                    add_to_item_pool(exec_name)
+            else:
+                exec_group_type = "Executable Region" if exec_grouping == 2 else "Executable Pack"
+
+                packs_to_add = {key: value for key, value in filtered_items.items() if
+                                value.item_type == exec_group_type}
+
+                for pack_name in packs_to_add:
+                    add_to_item_pool(pack_name)
+
+        # Shuffle Executables is next, if required
+        add_executables_to_item_pool()
+
         # First, we want to add progression items
         if shuffle_limits in (1, 2, 3):
             prog_shell = self.hn_item_table["Progressive Shell Limit"]
@@ -299,13 +332,6 @@ class HacknetWorld(World):
             prog_ram = self.hn_item_table["Progressive RAM"]
             # item_pool += [self.create_item(prog_ram) for _ in range(prog_ram.max_amount)]
             add_amount_to_item_pool("Progressive RAM", prog_ram.max_amount)
-
-        # Shuffle Executables is next, if required
-        if shuffle_execs < 4:
-            execs_to_add = {key: value for key, value in filtered_items.items() if value.item_type == "Executable"}
-
-            for exec_name in execs_to_add:
-                add_to_item_pool(exec_name)
 
         # If faction access is enabled, then shuffle that
         if faction_access < 3:
@@ -393,6 +419,7 @@ class HacknetWorld(World):
         options = self.options
         player_goal = int(options.player_goal)
         shuffle_execs = int(options.shuffle_execs)
+        exec_grouping = int(options.exec_grouping)
         faction_access = int(options.faction_access)
         shuffle_labs = bool(options.shuffle_labs)
         exclude_junebug = bool(options.exclude_junebug)
@@ -402,6 +429,10 @@ class HacknetWorld(World):
 
         dont_shuffle_execs = shuffle_execs == 4
         no_faction_access = faction_access == 3
+
+        entropy_fac_req: int = 1
+        csec_fac_req: int = 2 if not shuffle_labs else 3
+        labs_fac_req: int = 3
 
         def create_real_location(loc_data: HacknetLocData) -> HacknetLocation:
             return HacknetLocation(player, loc_data.display_name, loc_data, loc_data.region)
@@ -442,6 +473,26 @@ class HacknetWorld(World):
                 loc.parent_region = region
             region.locations += region_locs
 
+        def player_has_amount_of_execs(state: CollectionState, amount: int, *execs: str) -> bool:
+            if dont_shuffle_execs:
+                return True
+            amount_needed = 1 if amount <= 0 else amount
+            has_amount: int = 0
+
+            for exec_name in execs:
+                if exec_grouping == 1 and exec_name == "FTPBounce":
+                    if state.has("FTPBounce", player) or state.has("FTPSprint", player):
+                        has_amount += 1
+                elif exec_grouping == 1:
+                    if state.has(exec_name, player):
+                        has_amount += 1
+                else:
+                    exec_pack = exec_is_in_pack(exec_name, exec_grouping == 2)
+                    if state.has(exec_pack, player):
+                        has_amount += 1
+
+            return has_amount >= amount_needed
+
         menu_region = Region("Menu", player, self.multiworld)
         self.multiworld.regions.append(menu_region)
         add_locs_to_region(menu_region)
@@ -450,24 +501,23 @@ class HacknetWorld(World):
         self.multiworld.regions.append(intro_region)
         add_locs_to_region(intro_region)
         menu_region.connect(intro_region, "Finish Maiden Flight",
-                            lambda state: (dont_shuffle_execs or state.has("SSHCrack", player) or
-                                           state.has("WebServerWorm", player) or
-                                           state.has("SMTPOverflow", player) or
-                                           state.has("FTPBounce", player) or state.has("FTPSprint", player))
+                            lambda state: player_has_amount_of_execs(state, 1,
+                                                                     "FTPBounce", "SSHCrack", "WebServerWorm",
+                                                                     "SMTPOverflow")
                             )
 
         entropy_region = Region("Entropy", player, self.multiworld)
         self.multiworld.regions.append(entropy_region)
         add_locs_to_region(entropy_region)
         intro_region.connect(entropy_region, "Join Entropy",
-                             lambda state: (dont_shuffle_execs or state.has("SSHCrack", player) or
-                                            state.has("WebServerWorm", player) or
-                                            state.has("SMTPOverflow", player) or
-                                            state.has("FTPBounce", player) or state.has("FTPSprint", player)) and
-                                           (no_faction_access or state.has("Progressive Faction Access", player, 1))
+                             lambda state: player_has_amount_of_execs(state, 2, "FTPBounce", "SSHCrack",
+                                                                      "WebServerWorm", "SMTPOverflow")
+                                           and
+                                           (no_faction_access or state.has("Progressive Faction Access", player,
+                                                                           entropy_fac_req))
                              )
 
-        if shuffle_ptc or shuffle_achvs:
+        if shuffle_ptc:
             ptc_region = Region("PointClicker", player, self.multiworld)
             self.multiworld.regions.append(ptc_region)
             add_locs_to_region(ptc_region)
@@ -480,24 +530,17 @@ class HacknetWorld(World):
         self.multiworld.regions.append(entropy_naix_region)
         add_locs_to_region(entropy_naix_region)
         entropy_region.connect(entropy_naix_region, "Attack Naix",
-                               lambda state: (dont_shuffle_execs or
-                                              (state.has("WebServerWorm", player) or
-                                               state.has("SMTPOverflow", player) and
-                                               (state.has("FTPBounce", player) or state.has("FTPSprint", player)))
-                                              and state.has("eosDeviceScan", player)
-                                              )
+                               lambda state: player_has_amount_of_execs(state, 4, "FTPBounce", "WebServerWorm",
+                                                                        "SMTPOverflow", "eosDeviceScan")
                                )
 
         elsec_intro_region = Region("/el Sec - Naix", player, self.multiworld)
         self.multiworld.regions.append(elsec_intro_region)
         add_locs_to_region(elsec_intro_region)
         entropy_naix_region.connect(elsec_intro_region, "Start /el Sec Intro",
-                                    lambda state: (dont_shuffle_execs or
-                                                   (state.has("WebServerWorm", player) and
-                                                    state.has("SMTPOverflow", player) and
-                                                    state.has("SSHCrack", player) and
-                                                    (state.has("FTPBounce", player) or state.has("FTPSprint", player))
-                                                    ))
+                                    lambda state: player_has_amount_of_execs(state, 5, "FTPBounce", "SSHCrack",
+                                                                             "WebServerWorm", "SMTPOverflow",
+                                                                             "SQL_MemCorrupt")
                                     )
 
         elsec_polar_star_region = Region("/el Sec - Polar Star", player, self.multiworld)
@@ -523,10 +566,9 @@ class HacknetWorld(World):
             self.multiworld.regions.append(kaguya_trials_region)
             add_locs_to_region(kaguya_trials_region)
             csec_intro_region.connect(kaguya_trials_region, "Run KaguyaTrials.exe",
-                                      lambda state: (dont_shuffle_execs or
-                                                     state.has("TorrentStreamInjector", player)) and
+                                      lambda state: player_has_amount_of_execs(state, 1, "TorrentStreamInjector") and
                                                     (no_faction_access or
-                                                     state.has("Progressive Faction Access", player, 2))
+                                                     state.has("Progressive Faction Access", player, labs_fac_req))
                                       )
 
             labs_set1_region = Region("Labyrinths - Set 1", player, self.multiworld)
@@ -538,7 +580,7 @@ class HacknetWorld(World):
             self.multiworld.regions.append(labs_set2_region)
             add_locs_to_region(labs_set2_region)
             labs_set1_region.connect(labs_set2_region, "Obtain SSLTrojan",
-                                     lambda state: dont_shuffle_execs or state.has("SSLTrojan", player)
+                                     lambda state: player_has_amount_of_execs(state, 1, "SSLTrojan")
                                      )
 
             labs_ha_region = Region("Labyrinths - Hermetic Alchemists", player, self.multiworld)
@@ -550,7 +592,7 @@ class HacknetWorld(World):
             self.multiworld.regions.append(labs_mf_region)
             add_locs_to_region(labs_mf_region)
             labs_ha_region.connect(labs_mf_region, "Obtain Memory Forensics Suite",
-                                   lambda state: dont_shuffle_execs or state.has("Mem Suite", player)
+                                   lambda state: player_has_amount_of_execs(state, 1, "Mem Suite")
                                    )
 
             labs_striker_region = Region("Labyrinths - Striker", player, self.multiworld)
@@ -577,15 +619,13 @@ class HacknetWorld(World):
             self.multiworld.regions.append(labs_finale1_region)
             add_locs_to_region(labs_finale1_region)
             labs_set4_region.connect(labs_finale1_region, "Finish Mission Set 4",
-                                     lambda state: (dont_shuffle_execs or
-                                                    (state.has("SignalScramble", player) or
-                                                     state.has("Tracekill", player)))
+                                     lambda state: player_has_amount_of_execs(state, 1, "SignalScramble", "Tracekill")
                                      )
 
             self.multiworld.regions.append(labs_exit_region)
             add_locs_to_region(labs_exit_region)
             labs_finale1_region.connect(labs_exit_region, "Obtain PacificPortcrusher",
-                                        lambda state: dont_shuffle_execs or state.has("PacificPortcrusher", player)
+                                        lambda state: player_has_amount_of_execs(state, 1, "PacificPortcrusher")
                                         )
 
         if shuffle_labs:
@@ -596,22 +636,24 @@ class HacknetWorld(World):
         add_locs_to_region(csec_main_region)
         if shuffle_labs:
             labs_exit_region.connect(csec_main_region, "Finish Labyrinths",
-                                     lambda state: (dont_shuffle_execs or state.has("SQL_MemCorrupt", player)) and
+                                     lambda state: player_has_amount_of_execs(state, 1, "SQL_MemCorrupt") and
                                                    (no_faction_access or
-                                                    state.has("Progressive Faction Access", player, 3))
+                                                    state.has("Progressive Faction Access", player,
+                                                              csec_fac_req))
                                      )
         else:
-            csec_main_region.connect(csec_intro_region, "Finish CSEC Intro",
-                                     lambda state: (dont_shuffle_execs or state.has("SQL_MemCorrupt", player)) and
+            csec_intro_region.connect(csec_main_region, "Finish CSEC Intro",
+                                     lambda state: player_has_amount_of_execs(state, 1, "SQL_MemCorrupt") and
                                                    (no_faction_access or
-                                                    state.has("Progressive Faction Access", player, 2))
+                                                    state.has("Progressive Faction Access", player,
+                                                              csec_fac_req))
                                      )
 
         csec_dec_region = Region("CSEC - DEC", player, self.multiworld)
         self.multiworld.regions.append(csec_dec_region)
         add_locs_to_region(csec_dec_region)
         csec_main_region.connect(csec_dec_region, "Obtain Decyphering Tools",
-                                 lambda state: dont_shuffle_execs or state.has("DEC Suite", player))
+                                 lambda state: player_has_amount_of_execs(state, 1, "DEC Suite"))
 
         if shuffle_labs:
             post_labs_region = Region("Post-Labyrinths", player, self.multiworld)
@@ -628,8 +670,7 @@ class HacknetWorld(World):
             self.multiworld.regions.append(project_junebug_region)
             add_locs_to_region(project_junebug_region)
             csec_dec_region.connect(project_junebug_region, "Start Project Junebug",
-                                    lambda state: dont_shuffle_execs or state.has("KBTPortTest", player)
-                                    )
+                                    lambda state: player_has_amount_of_execs(state, 1, "KBTPortTest"))
 
             project_junebug_region.connect(csec_bit_region, "Start Bit Contracts")
         else:
@@ -639,10 +680,8 @@ class HacknetWorld(World):
         self.multiworld.regions.append(finale_region)
         add_locs_to_region(finale_region)
         csec_bit_region.connect(finale_region, "Finish Bit Contract",
-                                lambda state: (dont_shuffle_execs or
-                                               state.has("KBTPortTest", player) and
-                                               (state.has("SignalScramble", player) or
-                                                state.has("Tracekill", player)))
+                                lambda state: player_has_amount_of_execs(state, 1, "KBTPortTest")
+                                              and player_has_amount_of_execs(state, 1, "SignalScramble", "Tracekill")
                                 )
 
         self.place_goal()

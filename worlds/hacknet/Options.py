@@ -82,14 +82,14 @@ class ShufflePointClicker(Choice):
     PointClicker upgrades only send a check the first time they're bought.
     This adds ~51 location checks.
 
-    Checks + Items: Every PointClicker upgrade is a check, but won't do anything when the player buys it.
+    Block Upgrades: Every PointClicker upgrade is a check, but won't do anything when the player buys it.
     This forces the player to rely on PointClicker Passive items being sent to them.
     Only Checks: Every PointClicker upgrade is a check, and will actually upgrade when the player buys it.
     Disabled: (Default) Don't shuffle PointClicker, at all.
     """
 
     display_name = "Shuffle PointClicker Upgrades"
-    option_checks_and_items = 1
+    option_block_upgrades = 1
     option_only_checks = 2
     option_disabled = 3
     default = 3
@@ -118,6 +118,7 @@ class ExecutableGrouping(Choice):
     """
     When shuffling executables, how should they be grouped?
     Currently, doesn't work (its rules aren't implemented), but will before beta
+    If set to a value other than Individually, all executables will be shuffled, regardless of classification.
 
     Individually: (Default) Every executable is its own item.
     Regional: Executables are grouped by region. (e.g., "Labyrinths Executables" is TorrentStreamInjector, SSLTrojan, etc.)
