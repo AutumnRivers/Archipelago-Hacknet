@@ -531,8 +531,7 @@ class HacknetWorld(World):
         add_locs_to_region(entropy_naix_region)
         entropy_region.connect(entropy_naix_region, "Attack Naix",
                                lambda state: player_has_amount_of_execs(state, 4, "FTPBounce", "WebServerWorm",
-                                                                        "SMTPOverflow", "eosDeviceScan")
-                               )
+                                                                        "SMTPOverflow", "eosDeviceScan"))
 
         elsec_intro_region = Region("/el Sec - Naix", player, self.multiworld)
         self.multiworld.regions.append(elsec_intro_region)
@@ -540,8 +539,7 @@ class HacknetWorld(World):
         entropy_naix_region.connect(elsec_intro_region, "Start /el Sec Intro",
                                     lambda state: player_has_amount_of_execs(state, 5, "FTPBounce", "SSHCrack",
                                                                              "WebServerWorm", "SMTPOverflow",
-                                                                             "SQL_MemCorrupt")
-                                    )
+                                                                             "SQL_MemCorrupt"))
 
         elsec_polar_star_region = Region("/el Sec - Polar Star", player, self.multiworld)
         self.multiworld.regions.append(elsec_polar_star_region)

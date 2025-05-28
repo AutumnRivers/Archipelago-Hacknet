@@ -236,13 +236,13 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         if static_hundreds > 5:
             static_hundreds = 5
         if target_score < 1000:
-            static_hundreds = 0
+            static_hundreds = 1
 
         static_thousands = target_score % 100000
         if static_thousands > 5:
             static_thousands = 5
         if target_score < 100000:
-            static_thousands = 0
+            static_thousands = 1
 
         set_rule(multiworld.get_location(loc_name, player),
                  lambda state: (state.has("PointClicker Passive*10", player, tens_needed)) and
@@ -268,14 +268,18 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         if shuffle_ptc == 2:
             return
 
+        def set_ranged_rule(start: int, end: int, target_rate: int, target_points) -> None:
+            for ptc_index in range(start, end):
+                set_pointclicker_rule(f"PointClicker -- Upgrade {ptc_index}", target_rate, target_points)
+
         set_pointclicker_rule("PointClicker -- Click Me!", 10, 1000)
         set_pointclicker_rule("PointClicker -- Autoclicker v1", 20, 1000)
         set_pointclicker_rule("PointClicker -- Autoclicker v2", 50, 1000)
         set_pointclicker_rule("PointClicker -- Pointereiellion", 1000, 2000)
-        set_pointclicker_rule("PointClicker -- Upgrade 8", 2000, 50000)
-        set_pointclicker_rule("PointClicker -- Upgrade 16", 2500, 100000)
-        set_pointclicker_rule("PointClicker -- Upgrade 30", 3330, 500000)
-        set_pointclicker_rule("PointClicker -- Upgrade 50", 3330, 500000)
+        set_ranged_rule(4, 8, 1000, 2000)
+        set_ranged_rule(8, 16, 2000, 50000)
+        set_ranged_rule(16, 30, 2500, 100000)
+        set_ranged_rule(30, 51, 3330, 500000)
 
     def set_achievement_rules():
         rule_setter.set_exec_rule("Achievement -- Makeover!", "ThemeChanger")
