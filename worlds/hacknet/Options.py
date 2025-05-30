@@ -117,7 +117,6 @@ class ShuffleExecutables(Choice):
 class ExecutableGrouping(Choice):
     """
     When shuffling executables, how should they be grouped?
-    Currently, doesn't work (its rules aren't implemented), but will before beta
     If set to a value other than Individually, all executables will be shuffled, regardless of classification.
 
     Individually: (Default) Every executable is its own item.

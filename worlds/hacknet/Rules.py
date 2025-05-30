@@ -252,7 +252,6 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
                                (state.has("PointClicker +1000pt./s", player, static_thousands)))
 
     def set_pointclicker_rules():
-        # Does PointClicker even need rules...?
         if shuffle_ptc == 3:
             return
 
@@ -288,12 +287,10 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         rule_setter.set_basic_rule("Achievement -- Join CSEC", "Join CSEC")
         rule_setter.set_basic_rule("Achievement -- Rude//el Sec Champion", "/el -- Head of Polar Star (Download Files)")
         rule_setter.set_basic_rule("Achievement -- PointClicker", "Entropy -- PointClicker (Mission)")
-        set_pointclicker_rule("Achievement -- PointClicker", 10, 1)
+        set_pointclicker_rule("Achievement -- PointClicker", 3330, 500000)
         rule_setter.set_basic_rule("Achievement -- You better not have clicked for those...",
                                    "Entropy -- PointClicker (Mission)")
-        set_pointclicker_rule("Achievement -- You better not have clicked for those...",
-                              3330, 500000)
-        pass
+        set_pointclicker_rule("Achievement -- You better not have clicked for those...", 3330, 500000)
 
     set_mission_rules()
 
