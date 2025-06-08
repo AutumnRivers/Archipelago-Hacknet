@@ -199,7 +199,6 @@ class HacknetWorld(World):
         pass
 
     def create_item(self, name: str) -> HacknetItem:
-        print(f"Creating item {name} for player {self.player}")
         item = self._master_items_table[name]
         hn_item = HacknetItem(name, self.player, item, False)
         if item.max_amount > -1:
@@ -278,7 +277,6 @@ class HacknetWorld(World):
                 hn_item_pool.append(item)
                 if item.classification == ItemClassification.progression:
                     exclude.append(item)
-                print(hn_item_pool.count(item))
             else:
                 filler_item_name = get_random_filler_item()[0]
                 hn_item_pool.append(self.create_item(filler_item_name))
@@ -290,13 +288,10 @@ class HacknetWorld(World):
             if item in exclude:
                 excluded_amount = exclude.count(item)
                 remaining_amount = amount - excluded_amount
-                print(f"Item {item.name} excluded {excluded_amount} times in pool")
                 hn_item_pool += [self.create_item(get_random_filler_item()[0]) for _ in range(excluded_amount)]
 
             if remaining_amount > 0:
-                print(remaining_amount)
                 for _ in range(remaining_amount):
-                    print(f"{remaining_amount} {item_name}")
                     new_item = self.create_item(item_name)
                     hn_item_pool.append(new_item)
 
@@ -356,13 +351,10 @@ class HacknetWorld(World):
 
         total_locations = len(self.multiworld.get_unfilled_locations(player))
         empty_locations = total_locations - len(hn_item_pool)
-        print(f"Total locations: {total_locations}, Total items: {len(hn_item_pool)}, Empty locations: {empty_locations}")
 
         def recalculate_empty_locations():
             nonlocal empty_locations
             empty_locations = total_locations - len(hn_item_pool)
-            print(
-                f"Total locations: {total_locations}, Total items: {len(hn_item_pool)}, Empty locations: {empty_locations}")
 
         def get_random_trap_name():
             trap_items = {key: value for key, value in self.hn_item_table.items() if
@@ -406,9 +398,7 @@ class HacknetWorld(World):
                 f"There are still {empty_locations} empty locations. This is likely an issue with you.\n" +
                 "You need to add more locations, or reduce the amount of items you have.")
 
-        print(f"Adding {len(hn_item_pool)} items to item pool...")
         self.multiworld.itempool += hn_item_pool
-        print(f"{len(hn_item_pool)} items added successfully!")
 
     def create_regions(self) -> None:
         print("Assigning regions...")
@@ -468,7 +458,6 @@ class HacknetWorld(World):
 
             region_locs = [loc for loc in real_locations if loc.raw_region == region.name and
                            loc.name not in excluded_events]
-            print(f"Found {len(region_locs)} locations in {region.name}.")
             for loc in region_locs:
                 loc.parent_region = region
             region.locations += region_locs
@@ -746,8 +735,6 @@ class HacknetWorld(World):
 
     def set_rules(self) -> None:
         set_rules(self.multiworld, self.options, self.player, self)
-        print(f"Test Item Name To ID: SSHCrack - {self.item_name_to_id['SSHCrack']}")
-        print(f"Test Item ID To Name: 22 - {self.item_id_to_name[22]}")
 
     def generate_basic(self) -> None:
         pass
