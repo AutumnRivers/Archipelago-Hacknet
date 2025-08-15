@@ -26,6 +26,16 @@ class HacknetRuleSetter:
 
         self.exec_packs_added: set[str] = set()
 
+    exec_ram_upgrades_needed = {
+        "SMTPOverflow": 1,
+        "SQL_MemCorrupt": 2,
+        "Decypher": 1,
+        "KBTPortTest": 2,
+        "TorrentStreamInjector": 1,
+        "Tracekill": 7,
+        "SignalScramble": 6 # We can get away with this
+    }
+
     def set_basic_rule(self, loc_name: str, prev_loc: str):
         """
         Sets a "basic" rule - basically, can the player reach this previous location?
@@ -46,10 +56,12 @@ class HacknetRuleSetter:
         """
         Sets an "executable" rule - does the player have all these executables?
         """
+        has_ram_limits = self.shuffle_limits in (1, 4)
         if self.shuffle_execs == 4 or len(execs) == 0:
             return
         for exec_name in execs:
             real_name = exec_name
+            ram_upgrades_needed = 0
             if exec_name == "FTPBounce" and self.sprint_replaces_bounce:
                 real_name = "FTPSprint"
 
@@ -57,8 +69,12 @@ class HacknetRuleSetter:
                 set_rule(self.multiworld.get_location(loc_name, self.player),
                          lambda state: state.has("FTPBounce") or state.has("FTPSprint"))
             elif self.exec_grouping == 1:
+                if real_name in self.exec_ram_upgrades_needed.keys():
+                    ram_upgrades_needed = self.exec_ram_upgrades_needed[real_name]
                 set_rule(self.multiworld.get_location(loc_name, self.player),
-                         lambda state: state.has(real_name, self.player))
+                         lambda state: state.has(real_name, self.player) and
+                                       (not has_ram_limits or
+                                        state.has("Progressive RAM", self.player, ram_upgrades_needed)))
             elif self.exec_grouping in (2, 3):
                 exec_pack = exec_is_in_pack(exec_name, self.exec_grouping == 2)
                 if exec_pack in self.exec_packs_added:
@@ -122,7 +138,8 @@ class HacknetRuleSetter:
         set_rule(self.multiworld.get_location(loc_name, self.player),
                  lambda state: ((has_shell_limits == False) or
                                 state.has("Progressive Shell Limit", self.player, shells_needed)) and
-                               ((has_ram_limits == False) or state.has("Progressive RAM", self.player, ram_upgrades_needed))
+                               ((has_ram_limits == False) or
+                                state.has("Progressive RAM", self.player, ram_upgrades_needed))
                  )
 
     def set_exec_rule_with_loc(self, loc_name: str, prev_loc: str, *execs: str):

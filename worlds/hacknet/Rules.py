@@ -299,6 +299,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
     if shuffle_achievements:
         set_achievement_rules()
     if shuffle_nodes:
-        set_node_rules(rule_setter)
+        # set_node_rules(rule_setter)
+        pass
 
-    visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")
+    # visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")

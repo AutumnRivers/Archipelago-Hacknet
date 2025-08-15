@@ -242,7 +242,7 @@ class HacknetOptions(PerGameCommonOptions):
     shuffle_labs: EnableLabyrinths
     enable_limits: EnableLimits
     shuffle_achvs: EnableAchievements
-    shuffle_nodes: ShuffleAdminAccess
+    # shuffle_nodes: ShuffleAdminAccess
 
     shuffle_ptc: ShufflePointClicker
 
