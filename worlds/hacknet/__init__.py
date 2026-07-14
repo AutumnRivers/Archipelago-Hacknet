@@ -77,7 +77,7 @@ class HacknetWorld(World):
         shuffle_ptc = int(options.shuffle_ptc)
         shuffle_execs = int(options.shuffle_execs)
         exec_grouping = int(options.exec_grouping)
-        shuffle_nodes = bool(options.shuffle_nodes)
+        # shuffle_nodes = bool(options.shuffle_nodes)
         shuffle_achievements = bool(options.shuffle_achvs)
         start_with_basics = bool(options.start_with_ftp_and_ssh)
         sprint_replaces_bounce = bool(options.sprint_replaces_bounce)
@@ -89,7 +89,7 @@ class HacknetWorld(World):
         forcehacks = int(options.max_forcehacks)
 
         exclude_junebug = bool(options.exclude_junebug)
-        shuffle_nodes = bool(options.shuffle_nodes)
+        # shuffle_nodes = bool(options.shuffle_nodes)
 
         if shuffle_ptc:
             self.hn_loc_table += pointclicker_table
@@ -749,7 +749,8 @@ class HacknetWorld(World):
             "randomization_seed": -1, # for future use
             "executable_grouping": 1,
             "enable_labyrinths": True,
-            "enable_faction_access": False
+            "enable_faction_access": False,
+            "player_goal": 1
         }
 
         options = self.options
@@ -778,5 +779,6 @@ class HacknetWorld(World):
         slot_data["enable_labyrinths"] = shuffle_labs
         slot_data["enable_faction_access"] = faction_access < 3
         slot_data["executable_grouping"] = executable_grouping
+        slot_data["player_goal"] = int(options.player_goal)
 
         return slot_data

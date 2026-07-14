@@ -33,8 +33,6 @@ class HacknetItem(Item):
 
         pass
 
-# Starting index is 133713370000, because hax0rz
-
 item_table = {
     # Executables
     "FTPBounce": ItemData(21, ItemClassification.progression, "Executable", False),

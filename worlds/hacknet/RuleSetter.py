@@ -15,7 +15,7 @@ class HacknetRuleSetter:
         self.shuffle_execs = int(options.shuffle_execs)
         self.shuffle_labs = bool(options.shuffle_labs)
         self.shuffle_achievements = bool(options.shuffle_achvs)
-        self.shuffle_nodes = bool(options.shuffle_nodes)
+        #self.shuffle_nodes = bool(options.shuffle_nodes)
         self.shuffle_ptc = int(options.shuffle_ptc)
         self.shuffle_limits = int(options.enable_limits)
         self.exclude_junebug = bool(options.exclude_junebug)
