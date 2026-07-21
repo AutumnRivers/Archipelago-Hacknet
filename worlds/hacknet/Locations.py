@@ -186,6 +186,7 @@ node_admin_table = [
     HacknetLocData(149, "Entropy", "Entropy -- PP Marketing Inc.", False),
     HacknetLocData(150, "Entropy", "Entropy -- X-C Project Tablet#001//RESEARCH", False),
     HacknetLocData(151, "Entropy", "Entropy -- Jason's PowerBook Plus", False),
+    HacknetLocData(420, "Entropy", "Entropy -- Jason's ePhone 4S", False),
     HacknetLocData(152, "Entropy", "Entropy -- JDel Home PC", False),
     HacknetLocData(153, "Entropy", "Entropy -- Jacob's ePhone 4", False),
     HacknetLocData(154, "Entropy - Naix", "Entropy -- Naix Root Gateway", False),
@@ -237,8 +238,7 @@ node_admin_table = [
     HacknetLocData(200, "CSEC - Project Junebug", "CSEC -- Eidolon Soft Production Server", False),
     HacknetLocData(201, "CSEC - Project Junebug", "CSEC -- KBT-PM 2.44 REG#10811", False),
     HacknetLocData(202, "CSEC - Project Junebug", "CSEC -- Kellis Biotech Client Services", False),
-    HacknetLocData(203, "CSEC - Project Junebug", "CSEC -- Kellis Biotech Production Asset Server",
-                   False),
+    HacknetLocData(203, "CSEC - Project Junebug", "CSEC -- Kellis Biotech Production Asset Server", False),
 
     # CSEC/Bit
     HacknetLocData(204, "CSEC - Bit", "CSEC -- Bitwise Drop Server", False),

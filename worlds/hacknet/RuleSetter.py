@@ -15,7 +15,7 @@ class HacknetRuleSetter:
         self.shuffle_execs = int(options.shuffle_execs)
         self.shuffle_labs = bool(options.shuffle_labs)
         self.shuffle_achievements = bool(options.shuffle_achvs)
-        #self.shuffle_nodes = bool(options.shuffle_nodes)
+        self.shuffle_nodes = bool(options.shuffle_nodes)
         self.shuffle_ptc = int(options.shuffle_ptc)
         self.shuffle_limits = int(options.enable_limits)
         self.exclude_junebug = bool(options.exclude_junebug)
@@ -83,11 +83,7 @@ class HacknetRuleSetter:
                          lambda state: state.has(exec_pack, self.player))
                 self.exec_packs_added.add(exec_pack)
 
-    def set_any_exec_rule(self, state: CollectionState, amount_needed: int, *execs: str) -> bool:
-        """
-        Same as above, but checks if player has any of the executables
-        This is really only used for the intro
-        """
+    def has_any_execs(self, state: CollectionState, amount_needed: int, *execs: str) -> bool:
         amount_needed = 1 if amount_needed is None else amount_needed
         has_amount_of_execs: int = 0
 
@@ -108,6 +104,13 @@ class HacknetRuleSetter:
                     has_amount_of_execs += 1
 
         return has_amount_of_execs >= amount_needed
+
+    def set_any_exec_rule(self, loc_name: str, amount_needed: int, *execs: str):
+        """
+        Same as above, but checks if player has any of the executables
+        """
+        set_rule(self.multiworld.get_location(loc_name, self.player),
+                    lambda state: self.has_any_execs(state, amount_needed, *execs))
 
     def set_faction_access_rule(self, loc_name: str, amount_needed: int):
         """

@@ -21,7 +21,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
     shuffle_execs = int(options.shuffle_execs)
     shuffle_labs = bool(options.shuffle_labs)
     shuffle_achievements = bool(options.shuffle_achvs)
-    #shuffle_nodes = bool(options.shuffle_nodes)
+    shuffle_nodes = bool(options.shuffle_nodes)
     shuffle_ptc = int(options.shuffle_ptc)
     exclude_junebug = bool(options.exclude_junebug)
     player_goal = int(options.player_goal)
@@ -300,8 +300,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_pointclicker_rules()
     if shuffle_achievements:
         set_achievement_rules()
-    #if shuffle_nodes:
-        # set_node_rules(rule_setter)
-        # pass
+    if shuffle_nodes:
+        set_node_rules(rule_setter, options)
 
-    # visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")
+    visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")

@@ -44,7 +44,7 @@ class HacknetWorld(World):
     options: HacknetOptions
     topology_present = True
 
-    ap_world_version = "0.0.1"
+    ap_world_version = "1.0.0"
 
     hn_item_table = item_table
     hn_loc_table = mission_table
@@ -77,7 +77,7 @@ class HacknetWorld(World):
         shuffle_ptc = int(options.shuffle_ptc)
         shuffle_execs = int(options.shuffle_execs)
         exec_grouping = int(options.exec_grouping)
-        # shuffle_nodes = bool(options.shuffle_nodes)
+        shuffle_nodes = bool(options.shuffle_nodes)
         shuffle_achievements = bool(options.shuffle_achvs)
         start_with_basics = bool(options.start_with_ftp_and_ssh)
         sprint_replaces_bounce = bool(options.sprint_replaces_bounce)
@@ -89,14 +89,14 @@ class HacknetWorld(World):
         forcehacks = int(options.max_forcehacks)
 
         exclude_junebug = bool(options.exclude_junebug)
-        # shuffle_nodes = bool(options.shuffle_nodes)
+        shuffle_nodes = bool(options.shuffle_nodes)
 
         if shuffle_ptc:
             self.hn_loc_table += pointclicker_table
         if shuffle_achievements:
             self.hn_loc_table += achievements_table
-        #if shuffle_nodes:
-        #    self.hn_loc_table += node_admin_table
+        if shuffle_nodes:
+            self.hn_loc_table += node_admin_table
 
         if shuffle_limits in (1, 2, 3):
             prog_shell = self.hn_item_table["Progressive Shell Limit"]
@@ -318,14 +318,11 @@ class HacknetWorld(World):
         # Shuffle Executables is next, if required
         add_executables_to_item_pool()
 
-        # First, we want to add progression items
         if shuffle_limits in (1, 2, 3):
             prog_shell = self.hn_item_table["Progressive Shell Limit"]
-            # item_pool += [self.create_item(prog_shell) for _ in range(prog_shell.max_amount)]
             add_amount_to_item_pool("Progressive Shell Limit", prog_shell.max_amount)
         if shuffle_limits in (1, 4):
             prog_ram = self.hn_item_table["Progressive RAM"]
-            # item_pool += [self.create_item(prog_ram) for _ in range(prog_ram.max_amount)]
             add_amount_to_item_pool("Progressive RAM", prog_ram.max_amount)
 
         # If faction access is enabled, then shuffle that
@@ -413,6 +410,7 @@ class HacknetWorld(World):
         faction_access = int(options.faction_access)
         shuffle_labs = bool(options.shuffle_labs)
         exclude_junebug = bool(options.exclude_junebug)
+        shuffle_nodes = bool(options.shuffle_nodes)
 
         shuffle_ptc = int(options.shuffle_ptc) <= 2
         shuffle_achvs = bool(options.shuffle_achvs)
@@ -670,6 +668,15 @@ class HacknetWorld(World):
                                 lambda state: player_has_amount_of_execs(state, 1, "KBTPortTest")
                                               and player_has_amount_of_execs(state, 1, "SignalScramble", "Tracekill")
                                 )
+
+        if shuffle_nodes and shuffle_labs:
+            gibson_region = Region("Gibson", player, self.multiworld)
+            self.multiworld.regions.append(gibson_region)
+            add_locs_to_region(gibson_region)
+            finale_region.connect(gibson_region, "Reach The End",
+                                lambda state: player_has_amount_of_execs(state, 9,
+                                    "FTPBounce", "SSHCrack", "WebServerWorm", "SMTPOverflow", "SQL_MemCorrupt",
+                                    "KBTPortTest", "TorrentStreamInjector", "SSLTrojan", "SignalScramble"))
 
         self.place_goal()
 

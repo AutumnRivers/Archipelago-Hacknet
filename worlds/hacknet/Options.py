@@ -67,13 +67,13 @@ class EnableAchievements(Toggle):
 
 class ShuffleAdminAccess(Toggle):
     """
-    Adds admin access for EVERY ACCESSIBLE NODE as a check. This adds a LOT of locations. (~140 with DLC enabled) Recommended for asyncs.
-    Respects "Shuffle Labyrinths"
+    Admin Access as Checks
 
-    (Not yet implemented.)
+    Adds admin access for EVERY ACCESSIBLE NODE as a check. This adds a LOT of locations.
+    (~140 with DLC enabled) Recommended for asyncs.
+    Respects "Shuffle Labyrinths" and "Exclude Project Junebug"
     """
 
-    Visibility = Visibility.none
     display_name = "Admin Access as Checks"
 
 class ShufflePointClicker(Choice):
@@ -242,7 +242,7 @@ class HacknetOptions(PerGameCommonOptions):
     shuffle_labs: EnableLabyrinths
     enable_limits: EnableLimits
     shuffle_achvs: EnableAchievements
-    # shuffle_nodes: ShuffleAdminAccess
+    shuffle_nodes: ShuffleAdminAccess
 
     shuffle_ptc: ShufflePointClicker
 
@@ -276,7 +276,8 @@ hn_option_groups = [
         [
             EnableAchievements,
             ShufflePointClicker,
-            EnableFactionAccess
+            EnableFactionAccess,
+            ShuffleAdminAccess
         ]
     ),
     OptionGroup(
