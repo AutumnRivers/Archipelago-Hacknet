@@ -757,7 +757,9 @@ class HacknetWorld(World):
             "executable_grouping": 1,
             "enable_labyrinths": True,
             "enable_faction_access": False,
-            "player_goal": 1
+            "player_goal": 1,
+            "shuffle_nodes": False,
+            "world_version": self.ap_world_version
         }
 
         options = self.options
@@ -769,6 +771,7 @@ class HacknetWorld(World):
         deathlink = bool(options.deathlink)
         shuffle_labs = bool(options.shuffle_labs)
         faction_access = int(options.faction_access)
+        shuffle_nodes = bool(options.shuffle_nodes)
 
         executable_grouping = int(options.exec_grouping)
 
@@ -787,5 +790,6 @@ class HacknetWorld(World):
         slot_data["enable_faction_access"] = faction_access < 3
         slot_data["executable_grouping"] = executable_grouping
         slot_data["player_goal"] = int(options.player_goal)
+        slot_data["shuffle_nodes"] = shuffle_nodes
 
         return slot_data

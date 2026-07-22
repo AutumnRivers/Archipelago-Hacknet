@@ -223,6 +223,7 @@ node_admin_table = [
     HacknetLocData(183, "CSEC", "CSEC -- CSEC Crossroads Server", False),
     HacknetLocData(184, "CSEC", "CSEC -- CSEC Public Drop Server", False),
     HacknetLocData(185, "CSEC", "CSEC -- Sal_Home_Workstation", False),
+    HacknetLocData(422, "CSEC", "CSEC -- Elanor Helleran's ePhone 4S", False),
     HacknetLocData(186, "CSEC", "CSEC -- CCC Hacksquad Filedump", False),
     HacknetLocData(187, "CSEC", "CSEC -- Jason's LackBook Pro", False),
     HacknetLocData(188, "CSEC", "CSEC -- Death Row Records Database", False),
@@ -233,6 +234,7 @@ node_admin_table = [
     HacknetLocData(193, "CSEC - DEC", "CSEC -- Joseph Scott's Battlestation", False),
     HacknetLocData(194, "CSEC - DEC", "CSEC -- Macrosoft Workhorse Server 04", False),
     HacknetLocData(195, "CSEC", "CSEC -- CSEC (Contracts Server)", False),
+    HacknetLocData(423, "CSEC", "CSEC Assets Server", False),
 
     # CSEC/Project Junebug
     HacknetLocData(200, "CSEC - Project Junebug", "CSEC -- Eidolon Soft Production Server", False),
@@ -254,20 +256,18 @@ node_admin_table = [
     HacknetLocData(216, "Finale", "Bit -- EnTech Workstation _008", False),
     HacknetLocData(217, "Finale", "Bit -- EnTech_Zeus", False),
     HacknetLocData(218, "Finale", "Bit -- EnTech_Offline_Cycling_Backup", False),
+    HacknetLocData(421, "Finale", "Bit -- Macrosoft Storage Server", False),
     HacknetLocData(219, "Post-Game", "Post-Game -- Credits Server", False),
 
     # Labyrinths
-    HacknetLocData(230, "Labyrinths", "Kaguya Trials -- Kaguya Sprint Trial", True),
-    HacknetLocData(231, "Labyrinths", "Kaguya Trials -- Kaguya Push Trial", True),
-    HacknetLocData(232, "Labyrinths", "Kaguya Trials -- Kaguya Source", True),
+    HacknetLocData(230, "Labyrinths - Kaguya Trials", "Kaguya Trials -- Kaguya Sprint Trial", True),
+    HacknetLocData(231, "Labyrinths - Kaguya Trials", "Kaguya Trials -- Kaguya Push Trial", True),
+    HacknetLocData(232, "Labyrinths - Kaguya Trials", "Kaguya Trials -- Kaguya Source", True),
     HacknetLocData(233, "Labyrinths - Core", "Labyrinths -- Bibliotheque DropServer", True),
-    HacknetLocData(234, "Labyrinths - Core", "Labyrinths -- Bibliotheque Ghost Storage", True),
     HacknetLocData(235, "Labyrinths - Set 1", "Labyrinths -- Ricer PC", True),
     HacknetLocData(236, "Labyrinths - Set 2", "Labyrinths -- r00t_Tek Battlestation", True),
     HacknetLocData(237, "Labyrinths - Set 2", "Labyrinths -- L. Shaffer's NetBook", True),
     # Sets 3 & 4 are ignored since they aren't linear and are, therefore, missable
-    HacknetLocData(238, "Labyrinths - Memory Forensics", "Labyrinths -- Petunia Verres' Powerbook +",
-                   True),
     HacknetLocData(239, "Labyrinths - Memory Forensics", "Labyrinths -- iodependency~Atlas", True),
     HacknetLocData(240, "Labyrinths - Memory Forensics", "Labyrinths -- Snackintosh_PASSTHRU", True),
     HacknetLocData(241, "Labyrinths - Memory Forensics", "Labyrinths -- Snackintosh_Proxy", True),
@@ -295,6 +295,7 @@ node_admin_table = [
     HacknetLocData(258, "Labyrinths - Neopals", "Labyrinths -- Thomas_Office", True),
     HacknetLocData(259, "Labyrinths - Neopals", "Labyrinths -- Ash-ALIENGEAR13", True),
     HacknetLocData(260, "Labyrinths - Neopals", "Labyrinths -- Tiff Doehan_PersonalPowerbook", True),
+    HacknetLocData(430, "Labyrinths - Neopals", "Labyrinths -- Tiff's ePhone 7", True),
 
     HacknetLocData(261, "Labyrinths - Take Flight", "Labyrinths -- LAX_Pacific_Server", True),
     HacknetLocData(262, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_Network_Hub", True),

@@ -303,4 +303,4 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
     if shuffle_nodes:
         set_node_rules(rule_setter, options)
 
-    visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")
+    # visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")

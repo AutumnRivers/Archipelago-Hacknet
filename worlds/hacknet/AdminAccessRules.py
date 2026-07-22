@@ -19,13 +19,13 @@ def set_node_rules(rule_setter: HacknetRuleSetter, options: HacknetOptions):
 
     # Intro
     rule_setter.set_basic_rule("Intro -- Viper-Battlestation", "Intro -- Getting some tools together")
-    rule_setter.set_any_exec_rule("Intro -- Viper-Battlestation", 1, "FTPBounce", "SSHCrack", "WebServerWorm",
+    rule_setter.set_any_exec_rule("Intro -- Bitwise Test PC", 1, "FTPBounce", "SSHCrack", "WebServerWorm",
         "SMTPOverflow")
-    rule_setter.set_basic_rule("Intro -- Entropy Asset Cache", "Intro -- Viper-Battlestation")
+    rule_setter.set_basic_rule("Intro -- Entropy Asset Cache", "Intro -- Bitwise Test PC")
     rule_setter.set_basic_rule("Intro -- Bitwise Test PC", "Intro -- Maiden Flight")
-    rule_setter.set_basic_rule("Intro -- P. Anderson's Bedroom PC", "Intro -- Viper-Battlestation")
+    rule_setter.set_basic_rule("Intro -- P. Anderson's Bedroom PC", "Intro -- Bitwise Test PC")
     rule_setter.set_basic_rule("Entropy -- Slash-Bot News Network", "Entropy -- Confirmation Mission")
-    rule_setter.set_basic_rule("Intro -- Entropy test Server", "Intro -- Viper-Battlestation")
+    rule_setter.set_basic_rule("Intro -- Entropy test Server", "Intro -- Bitwise Test PC")
 
     # Entropy
     rule_setter.set_any_exec_rule("Entropy -- PointClicker (Admin Access)", 2, "FTPBounce", "SSHCrack", "WebServerWorm",
