@@ -18,7 +18,7 @@ class HacknetWeb(WebWorld):
     tutorials = [
         Tutorial(
             "MultiWorld Setup Guide",
-            "A guide to setting up Hacknet. This guide covers singleplayer, multiplayer, and web.",
+            "A guide to setting up Hacknet, along with its mod loader, Hacknet: Pathfinder.",
             "English",
             "setup_en.md",
             "setup/en",
@@ -32,8 +32,8 @@ class HacknetWeb(WebWorld):
 
 class HacknetWorld(World):
     """
-    Hacknet is a terminal-emulation game developed by Team Fractal Alligator,
-    and published by Fellow Traveler Games.
+    A hacker is dead and the media reports don't add up. When you are contacted by his “ghost” - an automated failsafe 
+    system - you're drawn into the dark and murky world of underground hackers.
     """
 
     game = "Hacknet"
@@ -753,13 +753,14 @@ class HacknetWorld(World):
             "limits_mode": 0,
             "sprint_replaces_bounce": False,
             "deathlink": False,
-            "randomization_seed": -1, # for future use
+            "randomization_seed": self.random.randint(0, 1000000),
             "executable_grouping": 1,
             "enable_labyrinths": True,
             "enable_faction_access": False,
             "player_goal": 1,
             "shuffle_nodes": False,
-            "world_version": self.ap_world_version
+            "world_version": self.ap_world_version,
+            "dl_method": 0
         }
 
         options = self.options
@@ -772,6 +773,7 @@ class HacknetWorld(World):
         shuffle_labs = bool(options.shuffle_labs)
         faction_access = int(options.faction_access)
         shuffle_nodes = bool(options.shuffle_nodes)
+        dl_method = int(options.dl_method)
 
         executable_grouping = int(options.exec_grouping)
 
@@ -791,5 +793,6 @@ class HacknetWorld(World):
         slot_data["executable_grouping"] = executable_grouping
         slot_data["player_goal"] = int(options.player_goal)
         slot_data["shuffle_nodes"] = shuffle_nodes
+        slot_data["dl_method"] = dl_method
 
         return slot_data

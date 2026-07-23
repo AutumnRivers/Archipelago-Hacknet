@@ -188,6 +188,18 @@ class DeathLink(Toggle):
 
     display_name = "Enable DeathLink"
 
+class DeathLinkMethod(Choice):
+    """
+    Changes what happens when you receive a DeathLink. This does nothing if DeathLink is disabled.
+
+    Crash: Classic, bluescreen and crash your in-game PC
+    ETAS: Activates the Emergency Trace Aversion Sequence
+    """
+    display_name = "DeathLink Method"
+    option_crash = 0
+    option_etas = 1
+    default = 0
+
 class MaxMissionSkips(Range):
     """
     The maximum amount of mission skips that should be shuffled into the item pool.
@@ -213,17 +225,6 @@ class MaxForceHacks(Range):
     range_start = 0
     range_end = 10
     default = 0
-
-class AddMcGuffins(Toggle):
-    """
-    A super secret option you shouldn't be seeing because it's not actually implemented yet
-
-    Adds McGuffin items to the item pool, forcing the player to make even LESS progress until they have more items.
-    Why would you do this?
-    """
-
-    visibility = Visibility.none
-    display_name = "Add McGuffin Items"
 
 class RandomizeNonRandomizedIPs(Toggle):
     """
@@ -260,6 +261,7 @@ class HacknetOptions(PerGameCommonOptions):
     enable_etas_traps: ShuffleETASTrap
 
     deathlink: DeathLink
+    dl_method: DeathLinkMethod
 
 hn_option_groups = [
     OptionGroup(
@@ -290,7 +292,8 @@ hn_option_groups = [
     OptionGroup(
         "DeathLink Options",
         [
-            DeathLink
+            DeathLink,
+            DeathLinkMethod
         ]
     )
 ]

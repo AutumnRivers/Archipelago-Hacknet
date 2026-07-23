@@ -95,7 +95,7 @@ item_table = {
     # Traps
     "ETAS Trap": ItemData(666, ItemClassification.trap, "Trap", False),
     "Fake Connection": ItemData(667, ItemClassification.trap, "Trap", False),
-    "Reset PointClicker Points": ItemData(668, ItemClassification.trap, "PointClicker Trap", False),
+    "Random Theme": ItemData(668, ItemClassification.trap, "Trap", False),
     "ForkBomb": ItemData(669, ItemClassification.trap, "Trap", False),
 
     # Events
