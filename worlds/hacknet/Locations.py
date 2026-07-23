@@ -48,7 +48,7 @@ mission_table = [
     # /el
     HacknetLocData(301, "/el Sec - Naix", "Naix -- Deface Nortron Website", False, False),
     HacknetLocData(302, "/el Sec - Naix", "Naix -- Nortron Security Mainframe", False, False),
-    HacknetLocData(303, "/el Sec - Polar Star", "/el -- Head of Polar Star (Download Files)", False,
+    HacknetLocData(303, "/el Sec - Polar Star", "/el -- Prove Yourself", False,
                    False),
 
     # CSEC
@@ -160,7 +160,6 @@ achievements_table = [
     HacknetLocData(131, "Entropy", "Achievement -- To the Wire", False, False),
     HacknetLocData(132, "CSEC", "Achievement -- Makeover!", False, False),
     HacknetLocData(133, "Entropy", "Achievement -- Join Entropy", False, False),
-    HacknetLocData(134, "CSEC", "Achievement -- Join CSEC", False, False),
     HacknetLocData(135, "/el Sec - Polar Star", "Achievement -- TRUE ULTIMATE POWER!", False, False),
     HacknetLocData(136, "/el Sec - Polar Star", "Achievement -- Rude//el Sec Champion", False, False),
     HacknetLocData(137, "Entropy", "Achievement -- PointClicker", False, False),

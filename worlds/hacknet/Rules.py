@@ -79,16 +79,15 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
                                      "WebServerWorm", "SMTPOverflow")
 
         # /el Sec
-        # IIRC, only Polar Star needs to be completed in /el...
         rule_setter.set_partial_rule("Naix -- Deface Nortron Website", "Entropy -- Naix",
                          1, "WebServerWorm", "SMTPOverflow")
         rule_setter.set_partial_rule("Naix -- Nortron Security Mainframe", "Naix -- Deface Nortron Website",
                          1, "FTPBounce", "SSHCrack")
         # From here on out, it's assumed the player has the base 4 executables (ftp, ssh, web, smtp)
-        rule_setter.set_basic_rule("/el -- Head of Polar Star (Download Files)", "Naix -- Nortron Security Mainframe")
+        rule_setter.set_basic_rule("/el -- Prove Yourself", "Naix -- Nortron Security Mainframe")
 
         # CSEC Intro
-        rule_setter.set_basic_rule("CSEC -- CFC Herbs & Spices", "/el -- Head of Polar Star (Download Files)")
+        rule_setter.set_basic_rule("CSEC -- CFC Herbs & Spices", "/el -- Prove Yourself")
 
         # Set Labyrinths rules (if applicable)
         set_labyrinths_mission_rules()
@@ -287,7 +286,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         rule_setter.set_exec_rule("Achievement -- TRUE ULTIMATE POWER!", "ClockEXE")
         rule_setter.set_basic_rule("Achievement -- Join Entropy", "Entropy -- Confirmation Mission")
         rule_setter.set_basic_rule("Achievement -- Join CSEC", "Join CSEC")
-        rule_setter.set_basic_rule("Achievement -- Rude//el Sec Champion", "/el -- Head of Polar Star (Download Files)")
+        rule_setter.set_basic_rule("Achievement -- Rude//el Sec Champion", "/el -- Prove Yourself")
         rule_setter.set_basic_rule("Achievement -- PointClicker", "Entropy -- PointClicker (Mission)")
         set_pointclicker_rule("Achievement -- PointClicker", 3330, 500000)
         rule_setter.set_basic_rule("Achievement -- You better not have clicked for those...",
