@@ -13,9 +13,12 @@ from .RuleSetter import HacknetRuleSetter
 Admin Access has its own rules file due to how involved it is
 It's mainly for organizational purposes, basically
 """
-def set_node_rules(rule_setter: HacknetRuleSetter, options: HacknetOptions):
+def set_node_rules(rule_setter: HacknetRuleSetter, options: HacknetOptions, multiworld: MultiWorld, player: int):
     shuffle_labs = bool(options.shuffle_labs)
     exclude_junebug = bool(options.exclude_junebug)
+
+    forbid_items(multiworld.get_location("Intro -- Player's PC", player),
+        {"ETAS Trap", "ForkBomb", "Fake Connection", "Random Theme"})
 
     # Intro
     rule_setter.set_basic_rule("Intro -- Viper-Battlestation", "Intro -- Getting some tools together")

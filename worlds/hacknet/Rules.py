@@ -77,6 +77,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
 
         rule_setter.set_partial_rule("Entropy -- Naix", "Entropy -- Smash N' Grab", 1, "FTPBounce",
                                      "WebServerWorm", "SMTPOverflow")
+        rule_setter.set_limits_rule("Entropy -- Naix", 2, 2)
 
         # /el Sec
         rule_setter.set_partial_rule("Naix -- Deface Nortron Website", "Entropy -- Naix",
@@ -282,6 +283,7 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         set_ranged_rule(30, 51, 3330, 500000)
 
     def set_achievement_rules():
+        rule_setter.set_basic_rule("Achievement -- To the Wire", "CSEC -- Add a Death Row record for a family member")
         rule_setter.set_exec_rule("Achievement -- Makeover!", "ThemeChanger")
         rule_setter.set_exec_rule("Achievement -- TRUE ULTIMATE POWER!", "ClockEXE")
         rule_setter.set_basic_rule("Achievement -- Join Entropy", "Entropy -- Confirmation Mission")
@@ -299,6 +301,6 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
     if shuffle_achievements:
         set_achievement_rules()
     if shuffle_nodes:
-        set_node_rules(rule_setter, options)
+        set_node_rules(rule_setter, options, multiworld, player)
 
     # visualize_regions(multiworld.get_region("Menu", player), "hacknet_test.puml")

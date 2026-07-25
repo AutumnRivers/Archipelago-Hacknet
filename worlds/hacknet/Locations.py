@@ -319,9 +319,9 @@ node_admin_table = [
     HacknetLocData(275, "Labyrinths - Altitude Loss", "Labyrinths -- PA_747_0018 Flight Computer",
                    True),
 
-    HacknetLocData(276, "Labyrinths - Credits", "Labyrinths -- Kaguya_Projects", True),
-    HacknetLocData(277, "Labyrinths - Credits", "Labyrinths -- Kaguya_Gateway", True),
-    HacknetLocData(278, "Labyrinths - Credits", "Labyrinths -- Labyrinths_DevChat", True),
+    HacknetLocData(276, "Labyrinths - Altitude Loss", "Labyrinths -- Kaguya_Projects", True),
+    HacknetLocData(277, "Labyrinths - Altitude Loss", "Labyrinths -- Kaguya_Gateway", True),
+    HacknetLocData(278, "Labyrinths - Altitude Loss", "Labyrinths -- Labyrinths_DevChat", True),
 
     # Post-Labyrinths
     HacknetLocData(279, "Post-Labyrinths", "Labyrinths -- Coel__Gateway", True),
