@@ -285,7 +285,6 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         rule_setter.set_exec_rule("Achievement -- Makeover!", "ThemeChanger")
         rule_setter.set_exec_rule("Achievement -- TRUE ULTIMATE POWER!", "ClockEXE")
         rule_setter.set_basic_rule("Achievement -- Join Entropy", "Entropy -- Confirmation Mission")
-        rule_setter.set_basic_rule("Achievement -- Join CSEC", "Join CSEC")
         rule_setter.set_basic_rule("Achievement -- Rude//el Sec Champion", "/el -- Prove Yourself")
         rule_setter.set_basic_rule("Achievement -- PointClicker", "Entropy -- PointClicker (Mission)")
         set_pointclicker_rule("Achievement -- PointClicker", 3330, 500000)
