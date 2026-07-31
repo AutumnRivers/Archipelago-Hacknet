@@ -47,9 +47,8 @@ mission_table = [
 
     # /el
     HacknetLocData(301, "/el Sec - Naix", "Naix -- Deface Nortron Website", False, False),
-    HacknetLocData(302, "/el Sec - Naix", "Naix -- Nortron Security Mainframe", False, False),
-    HacknetLocData(303, "/el Sec - Polar Star", "/el -- Prove Yourself", False,
-                   False),
+    HacknetLocData(302, "/el Sec - Naix", "Naix -- Nortron Security Mainframe (Mission)", False, False),
+    HacknetLocData(303, "/el Sec - Polar Star", "/el -- Prove Yourself", False, False),
 
     # CSEC
     HacknetLocData(20, "CSEC - Intro", "CSEC -- CFC Herbs & Spices", False, False),
@@ -176,6 +175,7 @@ node_admin_table = [
     HacknetLocData(143, "Intro", "Intro -- Entropy test Server", False), # Not a typo
     HacknetLocData(144, "Intro", "Intro -- Viper-Battlestation", False),
     HacknetLocData(284, "Intro", "Intro -- Entropy Asset Cache", False),
+    HacknetLocData(424, "Entropy - Naix", "Intro -- Tim's ePhone 4S", False), # requires eos scanner
     HacknetLocData(145, "Intro", "Entropy -- Slash-Bot News Network", False),
 
     # Entropy
@@ -195,13 +195,14 @@ node_admin_table = [
     # Naix/el
     HacknetLocData(160, "/el Sec - Naix", "Naix -- Nortron Security Web Server", False),
     HacknetLocData(161, "/el Sec - Naix", "Naix -- Nortron Internal Services Server", False),
-    HacknetLocData(162, "/el Sec - Naix", "Naix -- Nortron Mainframe", False),
-    # Nortron Mail is skipped since you're not meant to get into it...
+    HacknetLocData(162, "/el Sec - Naix", "Naix -- Nortron Mainframe (Admin Access)", False),
+    HacknetLocData(430, "/el Sec - Naix", "Naix -- Nortron Mail", False), # by popular demand
 
     # This has its region set to Finale since it needs finale portcrackers
     HacknetLocData(163, "Finale", "/el -- /el Message Board", False),
     HacknetLocData(164, "/el Sec - SecuLock", "/el -- COME AT ME /EL's Secure SecuLock Drive", False),
     HacknetLocData(165, "/el Sec - SecuLock", "/el -- Stormrider", False),
+    HacknetLocData(425, "/el Sec - SecuLock", "/el -- Mica's ePhone 4S", False),
 
     # Polar Star
     HacknetLocData(166, "/el Sec - Polar Star", "/el -- Shrine of the Polar Star", False),
@@ -256,6 +257,8 @@ node_admin_table = [
     HacknetLocData(217, "Finale", "Bit -- EnTech_Zeus", False),
     HacknetLocData(218, "Finale", "Bit -- EnTech_Offline_Cycling_Backup", False),
     HacknetLocData(421, "Finale", "Bit -- Macrosoft Storage Server", False),
+    HacknetLocData(427, "Finale", "Bit -- ENTECH_TEST_01's ePhone 4S", False),
+    HacknetLocData(428, "Finale", "Bit -- ENTECH_TEST_02's ePhone 4S", False),
     HacknetLocData(219, "Post-Game", "Post-Game -- Credits Server", False),
 
     # Labyrinths
@@ -273,14 +276,12 @@ node_admin_table = [
     HacknetLocData(242, "Labyrinths - Memory Forensics", "Labyrinths -- Lihota Productions", True),
     HacknetLocData(243, "Labyrinths - Memory Forensics", "Labyrinths -- Raven Dataworks", True),
 
-    HacknetLocData(244, "Labyrinths - Hermetic Alchemists",
-                   "Labyrinths -- School of the Hermetic Alchemists", True),
+    HacknetLocData(244, "Labyrinths - Hermetic Alchemists", "Labyrinths -- School of the Hermetic Alchemists", True),
     HacknetLocData(245, "Labyrinths - Hermetic Alchemists", "Labyrinths -- HA_Solve", True),
     HacknetLocData(246, "Labyrinths - Hermetic Alchemists", "Labyrinths -- HA_Rebis", True),
     HacknetLocData(247, "Labyrinths - Hermetic Alchemists", "Labyrinths -- Nate's ePhone 4S", True),
     HacknetLocData(248, "Labyrinths - Hermetic Alchemists", "Labyrinths -- Nate Wesson Home", True),
-    HacknetLocData(249, "Labyrinths - Hermetic Alchemists",
-                   "Labyrinths -- Nate Wesson_STOR-DRIVE(tm)", True),
+    HacknetLocData(249, "Labyrinths - Hermetic Alchemists", "Labyrinths -- Nate Wesson_STOR-DRIVE(tm)", True),
     HacknetLocData(250, "Labyrinths - Hermetic Alchemists", "Labyrinths -- HA_Coagula", True),
 
     HacknetLocData(251, "Labyrinths - Striker", "Labyrinths -- Striker Cache", True),
@@ -294,30 +295,25 @@ node_admin_table = [
     HacknetLocData(258, "Labyrinths - Neopals", "Labyrinths -- Thomas_Office", True),
     HacknetLocData(259, "Labyrinths - Neopals", "Labyrinths -- Ash-ALIENGEAR13", True),
     HacknetLocData(260, "Labyrinths - Neopals", "Labyrinths -- Tiff Doehan_PersonalPowerbook", True),
-    HacknetLocData(430, "Labyrinths - Neopals", "Labyrinths -- Tiff's ePhone 7", True),
+    HacknetLocData(431, "Labyrinths - Neopals", "Labyrinths -- Tiff's ePhone 7", True),
 
     HacknetLocData(261, "Labyrinths - Take Flight", "Labyrinths -- LAX_Pacific_Server", True),
     HacknetLocData(262, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_Network_Hub", True),
-    HacknetLocData(263, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_Whitelist_Authenticator",
-                   True),
+    HacknetLocData(263, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_Whitelist_Authenticator", True),
     HacknetLocData(265, "Labyrinths - Take Flight", "Labyrinths -- Faith Morello's Laptop", True),
     HacknetLocData(266, "Labyrinths - Take Flight", "Labyrinths -- Vito McMichael's Laptop", True),
-    HacknetLocData(267, "Labyrinths - Take Flight", "Labyrinths -- Mark Robertson's Office Computer",
-                   True),
-    HacknetLocData(268, "Labyrinths - Take Flight", "Labyrinths -- Kim Burnaby's Office Computer",
-                   True),
+    HacknetLocData(267, "Labyrinths - Take Flight", "Labyrinths -- Mark Robertson's Office Computer", True),
+    HacknetLocData(268, "Labyrinths - Take Flight", "Labyrinths -- Kim Burnaby's Office Computer", True),
+    HacknetLocData(432, "Labyrinths - Take Flight", "Labyrinths -- Kim's ePad XL", True),
     HacknetLocData(269, "Labyrinths - Take Flight", "Labyrinths -- Yasu Arai's eBook Touch", True),
-    HacknetLocData(270, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_BookingsMainframe",
-                   True),
+    HacknetLocData(426, "Labyrinths - Take Flight", "Labyrinths -- Yasu's ePad Plus", True),
+    HacknetLocData(270, "Labyrinths - Take Flight", "Labyrinths -- PacificAir_BookingsMainframe", True),
 
     HacknetLocData(271, "Labyrinths - Altitude Loss", "Labyrinths -- Pacific_ATC_RoutingHub", True),
-    HacknetLocData(272, "Labyrinths - Altitude Loss",
-                   "Labyrinths -- Pacific_ATC_WhitelistAuthenticator", True),
+    HacknetLocData(272, "Labyrinths - Altitude Loss", "Labyrinths -- Pacific_ATC_WhitelistAuthenticator", True),
     HacknetLocData(273, "Labyrinths - Altitude Loss", "Labyrinths -- Pacific_ATC_Skylink", True),
-    HacknetLocData(274, "Labyrinths - Altitude Loss", "Labyrinths -- PA_747_0022 Flight Computer",
-                   True),
-    HacknetLocData(275, "Labyrinths - Altitude Loss", "Labyrinths -- PA_747_0018 Flight Computer",
-                   True),
+    HacknetLocData(274, "Labyrinths - Altitude Loss", "Labyrinths -- PA_747_0022 Flight Computer", True),
+    HacknetLocData(275, "Labyrinths - Altitude Loss", "Labyrinths -- PA_747_0018 Flight Computer", True),
 
     HacknetLocData(276, "Labyrinths - Altitude Loss", "Labyrinths -- Kaguya_Projects", True),
     HacknetLocData(277, "Labyrinths - Altitude Loss", "Labyrinths -- Kaguya_Gateway", True),

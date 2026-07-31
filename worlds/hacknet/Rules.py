@@ -82,10 +82,10 @@ def set_rules(multiworld: MultiWorld, options: HacknetOptions, player: int, worl
         # /el Sec
         rule_setter.set_partial_rule("Naix -- Deface Nortron Website", "Entropy -- Naix",
                          1, "WebServerWorm", "SMTPOverflow")
-        rule_setter.set_partial_rule("Naix -- Nortron Security Mainframe", "Naix -- Deface Nortron Website",
+        rule_setter.set_partial_rule("Naix -- Nortron Security Mainframe (Mission)", "Naix -- Deface Nortron Website",
                          1, "FTPBounce", "SSHCrack")
         # From here on out, it's assumed the player has the base 4 executables (ftp, ssh, web, smtp)
-        rule_setter.set_basic_rule("/el -- Prove Yourself", "Naix -- Nortron Security Mainframe")
+        rule_setter.set_basic_rule("/el -- Prove Yourself", "Naix -- Nortron Security Mainframe (Mission)")
 
         # CSEC Intro
         rule_setter.set_basic_rule("CSEC -- CFC Herbs & Spices", "/el -- Prove Yourself")
