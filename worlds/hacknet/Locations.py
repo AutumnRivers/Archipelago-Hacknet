@@ -191,6 +191,7 @@ node_admin_table = [
     HacknetLocData(154, "Entropy - Naix", "Entropy -- Naix Root Gateway", False),
     HacknetLocData(155, "Entropy - Naix", "Entropy -- Proxy_Node-X22", False),
     HacknetLocData(156, "Entropy - Naix", "Entropy -- Proxy_Node-X04", False),
+    HacknetLocData(421, "Entropy - Naix", "Entropy -- Macrosoft Storage Server", False),
 
     # Naix/el
     HacknetLocData(160, "/el Sec - Naix", "Naix -- Nortron Security Web Server", False),
@@ -256,7 +257,6 @@ node_admin_table = [
     HacknetLocData(216, "Finale", "Bit -- EnTech Workstation _008", False),
     HacknetLocData(217, "Finale", "Bit -- EnTech_Zeus", False),
     HacknetLocData(218, "Finale", "Bit -- EnTech_Offline_Cycling_Backup", False),
-    HacknetLocData(421, "Finale", "Bit -- Macrosoft Storage Server", False),
     HacknetLocData(427, "Finale", "Bit -- ENTECH_TEST_01's ePhone 4S", False),
     HacknetLocData(428, "Finale", "Bit -- ENTECH_TEST_02's ePhone 4S", False),
     HacknetLocData(219, "Post-Game", "Post-Game -- Credits Server", False),
